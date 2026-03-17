@@ -32,7 +32,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.google.android.gms.cast.framework.media.MediaIntentReceiver" />
+            android:value="com.example.gym_timer.CastOptionsProvider" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

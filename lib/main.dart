@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_timer/widgets/workout_card.dart';
-import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
+import 'package:gym_timer/services/cast_service.dart';
+import 'package:flutter_chrome_cast/widgets/chrome_cast_button.dart';
 
 void main() {
   runApp(const GymTimerApp());
@@ -32,13 +33,18 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  late FlutterChromeCast _chromeCast;
+  late final CastService _castService;
 
   @override
   void initState() {
     super.initState();
-    _chromeCast = FlutterChromeCast.instance;
-    // It's good practice to initialize here, though the button itself handles discovery.
+    _castService = CastService();
+  }
+
+  @override
+  void dispose() {
+    _castService.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,17 +55,7 @@ class _SetupScreenState extends State<SetupScreen> {
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
         actions: [
-          // Add the Cast button here
-          ChromeCastButton(
-            onDeviceConnected: (device) {
-              print('Device connected: \${device.name}');
-              // Handle connection logic
-            },
-            onDeviceDisconnected: () {
-              print('Device disconnected');
-              // Handle disconnection logic
-            },
-          ),
+          ChromeCastButton(),
         ],
       ),
       body: Padding(

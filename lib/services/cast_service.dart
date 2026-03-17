@@ -1,71 +1,72 @@
+import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 class CastService {
-  final FlutterChromeCast _chromeCast;
-  final String _namespace = 'urn:x-cast:com.gymtimer.data';
-  GoogleCastDevice? _connectedDevice;
+  static const _appId = 'CC1AD845'; // Default Media Receiver
+  static const _namespace = 'urn:x-cast:com.gymtimer.data';
 
-  // Singleton pattern
-  CastService._privateConstructor() : _chromeCast = FlutterChromeCast.instance;
-  static final CastService _instance = CastService._privateConstructor();
-  factory CastService() {
-    return _instance;
+  final ChromeCastController _controller = ChromeCastController();
+  final StreamController<bool> _connectionController = StreamController.broadcast();
+  
+  Stream<bool> get connectionStream => _connectionController.stream;
+  bool isConnected = false;
+
+  CastService() {
+    _controller.onSessionStarted = () {
+      debugPrint('CAST SESSION STARTED');
+      _connectionController.add(true);
+      isConnected = true;
+    };
+    
+    _controller.onSessionEnded = () {
+      debugPrint('CAST SESSION ENDED');
+      _connectionController.add(false);
+      isConnected = false;
+    };
+
+    _controller.onMessageReceived = (message) {
+      debugPrint('CAST MESSAGE RECEIVED: $message');
+      // Handle incoming messages if needed
+    };
   }
 
-  void init() {
-    _chromeCast.onDeviceConnected.listen((device) {
-      _connectedDevice = device;
-      _chromeCast.requestSession();
-    });
-
-    _chromeCast.onDeviceDisconnected.listen((device) {
-      _connectedDevice = null;
-    });
-
-    _chromeCast.onSessionStarted.listen((_) {
-      debugPrint("Session started, ready to send messages.");
-    });
-  }
-
-  Future<void> sendMessage(Map<String, dynamic> message) async {
-    if (_connectedDevice == null) {
-      debugPrint("No device connected, cannot send message.");
+  Future<void> _sendMessage(Map<String, dynamic> message) async {
+    if (!isConnected) {
+      debugPrint('Error: Not connected to a Cast device.');
       return;
     }
-
+    
+    final messageString = jsonEncode(message);
+    
     try {
-      await _chromeCast.sendMessage(
-        namespace: _namespace,
-        message: jsonEncode(message),
+      await _controller.sendMessage(
+        nameSpace: _namespace,
+        message: messageString,
       );
-      debugPrint('Successfully sent message: $message');
+      debugPrint('Sent message: $messageString');
     } catch (e) {
       debugPrint('Error sending message: $e');
     }
   }
 
-  // Example of sending the specific timer update payload
-  void sendTimerUpdate({
-    required String timeLeft,
-    required double progress,
-    required String state,
-    required int currentRound,
-    required int totalRounds,
-    required String nextExercise,
-  }) {
+  void updateTimer(String timeLeft, double progress, String state, int currentRound, int totalRounds, String nextExercise) {
     final payload = {
-      "command": "UPDATE_TIMER",
-      "data": {
-        "timeLeft": timeLeft,
-        "progress": progress,
-        "state": state,
-        "currentRound": currentRound,
-        "totalRounds": totalRounds,
-        "nextExercise": nextExercise
+      'command': 'UPDATE_TIMER',
+      'data': {
+        'timeLeft': timeLeft,
+        'progress': progress,
+        'state': state,
+        'currentRound': currentRound,
+        'totalRounds': totalRounds,
+        'nextExercise': nextExercise,
       }
     };
-    sendMessage(payload);
+    _sendMessage(payload);
+  }
+
+  void dispose() {
+    _connectionController.close();
   }
 }
