@@ -33,3 +33,11 @@ class TimerRunPause extends TimerState {
 class TimerRunComplete extends TimerState {
   const TimerRunComplete() : super(0);
 }
+
+class TimerCountdown extends TimerState {
+  const TimerCountdown(int duration) : super(duration);
+
+  @override
+  String toString() => 'TimerCountdown { duration: $duration }';
+}
+

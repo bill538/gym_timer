@@ -65,17 +65,17 @@ class _CircuitSetupScreenState extends State<CircuitSetupScreen> {
   Widget _buildNumberPicker(String title, int currentValue, int minValue, int maxValue, ValueChanged<int> onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
           NumberPicker(
             value: currentValue,
             minValue: minValue,
             maxValue: maxValue,
             step: 1,
             haptics: true,
-            axis: Axis.horizontal,
+            axis: Axis.vertical,
             onChanged: onChanged,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),

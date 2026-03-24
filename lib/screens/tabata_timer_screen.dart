@@ -1,197 +1,61 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gym_timer/bloc/tabata_timer_bloc.dart';
+import 'package:gym_timer/ticker/ticker.dart';
 import 'package:numberpicker/numberpicker.dart';
 
-class TabataTimerScreen extends StatefulWidget {
-  const TabataTimerScreen({super.key});
+class TabataSetupScreen extends StatefulWidget {
+  const TabataSetupScreen({super.key});
 
   @override
-  _TabataTimerScreenState createState() => _TabataTimerScreenState();
+  _TabataSetupScreenState createState() => _TabataSetupScreenState();
 }
 
-class _TabataTimerScreenState extends State<TabataTimerScreen> {
-  late Timer _timer;
+class _TabataSetupScreenState extends State<TabataSetupScreen> {
   int _workTime = 20;
   int _restTime = 10;
   int _rounds = 8;
-  int _currentRound = 1;
-  int _currentTime = 0;
-  String _currentState = "Get Ready";
-  bool _isPaused = true;
-  bool _showSettings = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentTime = 5;
-  }
-
-  void startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!_isPaused) {
-        setState(() {
-          if (_currentTime > 1) {
-            _currentTime--;
-          } else {
-            if (_currentState == "Get Ready") {
-              _currentState = "Work";
-              _currentTime = _workTime;
-            } else if (_currentState == "Work") {
-              if (_currentRound < _rounds) {
-                _currentState = "Rest";
-                _currentTime = _restTime;
-              } else {
-                _currentState = "Finished";
-                _timer.cancel();
-              }
-            } else if (_currentState == "Rest") {
-              _currentRound++;
-              _currentState = "Work";
-              _currentTime = _workTime;
-            }
-          }
-        });
-      }
-    });
-  }
-
-  void _togglePause() {
-    setState(() {
-      _isPaused = !_isPaused;
-    });
-  }
-
-  void _play() {
-    setState(() {
-      _showSettings = false;
-      _isPaused = false;
-    });
-    startTimer();
-  }
-
-  void _resetTimer() {
-    if (this.mounted) {
-      _timer.cancel();
-      setState(() {
-        _currentRound = 1;
-        _currentTime = 5;
-        _currentState = "Get Ready";
-        _isPaused = true;
-        _showSettings = true;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_timer.isActive) {
-      _timer.cancel();
-    }
-    super.dispose();
-  }
-
-  Color _getBackgroundColor() {
-    if (_currentState == "Work") return Colors.green;
-    if (_currentState == "Rest") return Colors.orange;
-    if (_currentState == "Get Ready") return Colors.blue;
-    return Colors.grey;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tabata Workout'),
+        title: const Text('Tabata Setup'),
       ),
-      body: _showSettings
-          ? _buildSettings()
-          : AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              color: _getBackgroundColor(),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Round $_currentRound / $_rounds',
-                      style: const TextStyle(
-                          fontSize: 40,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const SizedBox(height: 20),
+            _buildNumberPicker(
+                "Work Time (s)", _workTime, 1, 300, (value) => setState(() => _workTime = value)),
+            const SizedBox(height: 20),
+            _buildNumberPicker(
+                "Rest Time (s)", _restTime, 0, 300, (value) => setState(() => _restTime = value)),
+            const SizedBox(height: 20),
+            _buildNumberPicker("Rounds", _rounds, 1, 100, (value) => setState(() => _rounds = value)),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TabataTimerScreen(
+                      workTime: _workTime,
+                      restTime: _restTime,
+                      rounds: _rounds,
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      _currentState,
-                      style: const TextStyle(
-                          fontSize: 60,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '$_currentTime',
-                      style: const TextStyle(
-                          fontSize: 150,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                                _isPaused ? Icons.play_arrow : Icons.pause),
-                            iconSize: 60,
-                            color: Colors.white,
-                            onPressed: _togglePause,
-                          ),
-                          const SizedBox(width: 40),
-                          IconButton(
-                            icon: const Icon(Icons.refresh),
-                            iconSize: 60,
-                            color: Colors.white,
-                            onPressed: _resetTimer,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
+              child: const Text('Start Workout', style: TextStyle(fontSize: 18)),
             ),
-    );
-  }
-
-  Widget _buildSettings() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          const SizedBox(height: 20),
-          _buildNumberPicker(
-              "Work Time (s)", _workTime, 1, 300, (value) => setState(() => _workTime = value)),
-          const SizedBox(height: 20),
-          _buildNumberPicker(
-              "Rest Time (s)", _restTime, 0, 300, (value) => setState(() => _restTime = value)),
-          const SizedBox(height: 20),
-          _buildNumberPicker("Rounds", _rounds, 1, 100, (value) => setState(() => _rounds = value)),
-          const Spacer(),
-          ElevatedButton(
-            onPressed: _play,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: const Text('Play', style: TextStyle(fontSize: 18)),
-          ),
-          const SizedBox(height: 20),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Reset', style: TextStyle(fontSize: 18)),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -217,6 +81,118 @@ class _TabataTimerScreenState extends State<TabataTimerScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class TabataTimerScreen extends StatelessWidget {
+  final int workTime;
+  final int restTime;
+  final int rounds;
+
+  const TabataTimerScreen({
+    super.key,
+    required this.workTime,
+    required this.restTime,
+    required this.rounds,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => TabataTimerBloc(
+        ticker: const Ticker(),
+        workTime: workTime,
+        restTime: restTime,
+        rounds: rounds,
+      )..add(const TabataTimerStarted(duration: 0)),
+      child: const TabataTimerView(),
+    );
+  }
+}
+
+class TabataTimerView extends StatelessWidget {
+  const TabataTimerView({super.key});
+
+  Color _getBackgroundColor(String currentState) {
+    if (currentState == "Work") return Colors.green;
+    if (currentState == "Rest") return Colors.orange;
+    if (currentState == "Get Ready") return Colors.blue;
+    return Colors.grey;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rounds = context.select((TabataTimerBloc bloc) => bloc.rounds);
+    
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tabata Workout')),
+      body: BlocBuilder<TabataTimerBloc, TabataTimerState>(
+        builder: (context, state) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            color: _getBackgroundColor(state.currentState),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Round ${state.currentRound} / $rounds',
+                    style: const TextStyle(
+                        fontSize: 40,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    state.currentState,
+                    style: const TextStyle(
+                        fontSize: 60,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${state.duration}',
+                    style: const TextStyle(
+                        fontSize: 150,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (state is! TabataTimerComplete)
+                          IconButton(
+                            icon: Icon(state is TabataTimerInProgress ? Icons.pause : Icons.play_arrow),
+                            iconSize: 60,
+                            color: Colors.white,
+                            onPressed: () {
+                              if (state is TabataTimerInProgress) {
+                                context.read<TabataTimerBloc>().add(const TabataTimerPause());
+                              } else {
+                                context.read<TabataTimerBloc>().add(const TabataTimerResumed());
+                              }
+                            },
+                          ),
+                        const SizedBox(width: 40),
+                        IconButton(
+                          icon: const Icon(Icons.refresh),
+                          iconSize: 60,
+                          color: Colors.white,
+                          onPressed: () => context.read<TabataTimerBloc>().add(const TabataTimerReset()),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

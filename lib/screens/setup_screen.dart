@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_timer/widgets/workout_card.dart';
-import 'package:gym_timer/screens/tabata_timer_screen.dart';
+import 'package:gym_timer/screens/tabata_setup_screen.dart';
 import 'package:gym_timer/screens/emom_setup_screen.dart';
 import 'package:gym_timer/screens/amrap_setup_screen.dart';
 import 'package:gym_timer/screens/circuit_setup_screen.dart';
@@ -54,42 +54,54 @@ class _SetupScreenState extends State<SetupScreen> {
           mainAxisSpacing: 16.0,
           children: [
             WorkoutCard(
-              title: 'Tabata',
+              title: 'TABATA',
+              subtitle: '20s Work / 10s Rest',
+              icon: Icons.flash_on,
               glowColor: Colors.blue.shade400,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TabataTimerScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const TabataSetupScreen()),
                 );
               },
             ),
             WorkoutCard(
               title: 'EMOM',
+              subtitle: 'Every Minute on the Minute',
+              icon: Icons.fitness_center,
               glowColor: Colors.yellow.shade400,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EmomSetupScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const EmomSetupScreen()),
                 );
               },
             ),
             WorkoutCard(
               title: 'AMRAP',
+              subtitle: 'As Many Reps As Possible',
+              icon: Icons.timer,
               glowColor: Colors.green.shade400,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AmrapSetupScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const AmrapSetupScreen()),
                 );
               },
             ),
             WorkoutCard(
-              title: 'Circuit',
+              title: 'CIRCUIT',
+              subtitle: 'Variable Intervals',
+              icon: Icons.sync,
               glowColor: Colors.orange.shade400,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CircuitSetupScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const CircuitSetupScreen()),
                 );
               },
             ),

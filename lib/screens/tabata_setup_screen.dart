@@ -58,24 +58,27 @@ class _TabataSetupScreenState extends State<TabataSetupScreen> {
   }
 
   Widget _buildNumberPicker(String title, int currentValue, int minValue, int maxValue, ValueChanged<int> onChanged) {
-    return Column(
-      children: [
-        Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        NumberPicker(
-          value: currentValue,
-          minValue: minValue,
-          maxValue: maxValue,
-          step: 1,
-          haptics: true,
-          axis: Axis.vertical,
-          onChanged: onChanged,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          NumberPicker(
+            value: currentValue,
+            minValue: minValue,
+            maxValue: maxValue,
+            step: 1,
+            haptics: true,
+            axis: Axis.vertical,
+            onChanged: onChanged,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

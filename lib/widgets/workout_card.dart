@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 class WorkoutCard extends StatelessWidget {
   final String title;
+  final String subtitle;
+  final IconData icon;
   final Color glowColor;
   final VoidCallback onTap;
 
   const WorkoutCard({
     super.key,
     required this.title,
+    required this.subtitle,
+    required this.icon,
     required this.glowColor,
     required this.onTap,
   });
@@ -37,15 +41,33 @@ class WorkoutCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Center(
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: glowColor,
+              size: 48.0,
             ),
-          ),
+            const SizedBox(height: 12.0),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4.0),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
       ),
     );
