@@ -47,9 +47,9 @@ class CircuitTimerView extends StatelessWidget {
       case "Round Rest":
         return Colors.red;
       case "Get Ready":
-        return Colors.blue;
+        return const Color(0xFF40324B);
       default:
-        return Colors.grey;
+        return const Color(0xFF40324B);
     }
   }
 

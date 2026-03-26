@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gym_timer/screens/setup_screen.dart';
+import 'package:gym_timer/screens/splash_screen.dart';
 
 void main() {
   runApp(const GymTimerApp());
@@ -14,11 +14,11 @@ class GymTimerApp extends StatelessWidget {
       title: 'Project Gym Timer',
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF121212),
-        primaryColor: const Color(0xFF121212),
+        scaffoldBackgroundColor: const Color(0xFF40324B),
+        primaryColor: const Color(0xFF40324B),
         fontFamily: 'monospace',
       ),
-      home: const SetupScreen(),
+      home: SplashScreen(),
     );
   }
 }

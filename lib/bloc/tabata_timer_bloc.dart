@@ -42,15 +42,15 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   void _onStarted(TabataTimerStarted event, Emitter<TabataTimerState> emit) async {
     for (int i = 3; i > 0; i--) {
       emit(TabataTimerInitial(i, 1, "Get Ready"));
-      await _playSound('beep.mp3');
+      _playSound('beep.mp3');
       await Future.delayed(const Duration(seconds: 1));
     }
-    await _playSound('start.mp3');
+    _playSound('start.mp3');
     _startNextSegment(emit, 1, "Work", workTime);
   }
 
   void _onPaused(TabataTimerPause event, Emitter<TabataTimerState> emit) {
-    if (state is TabataTimerInProgress) {
+    if (state is TabataTimerInProgress || state.currentState == "Get Ready") {
       _tickerSubscription?.pause();
       emit(TabataTimerPaused(state.duration, state.currentRound, state.currentState));
     }
@@ -72,7 +72,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
     if (event.duration > 0) {
       emit(TabataTimerInProgress(event.duration, state.currentRound, state.currentState));
     } else {
-      await _playSound('end.mp3');
+      _playSound('end.mp3');
       _determineNextState(emit);
     }
   }
@@ -82,7 +82,10 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       if (state.currentRound < rounds) {
         _startNextSegment(emit, state.currentRound, "Rest", restTime);
       } else {
-        emit(const TabataTimerComplete());
+        emit(const TabataTimerFinished());
+        Future.delayed(const Duration(seconds: 30), () {
+          emit(const TabataTimerComplete());
+        });
       }
     } else if (state.currentState == "Rest") {
       _startNextSegment(emit, state.currentRound + 1, "Work", workTime);
@@ -96,6 +99,11 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   }
 
   Future<void> _playSound(String sound) async {
-    await _audioPlayer.play(AssetSource('sounds/$sound'));
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/$sound'));
+    } catch (e) {
+      print('Error playing sound $sound: $e');
+    }
   }
 }

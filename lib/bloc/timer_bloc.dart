@@ -36,11 +36,11 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     // 3-second countdown
     for (int i = 3; i > 0; i--) {
       emit(TimerCountdown(i));
-      await _playSound('beep.mp3');
+      _playSound('beep.mp3'); // Fire and forget
       await Future.delayed(const Duration(seconds: 1));
     }
     
-    await _playSound('start.mp3');
+    _playSound('start.mp3'); // Fire and forget
     emit(TimerRunInProgress(event.duration));
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
@@ -49,7 +49,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   void _onPaused(TimerPaused event, Emitter<TimerState> emit) {
-    if (state is TimerRunInProgress) {
+    if (state is TimerRunInProgress || state is TimerCountdown) {
       _tickerSubscription?.pause();
       emit(TimerRunPause(state.duration));
     }
@@ -71,12 +71,17 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     if (event.duration > 0) {
       emit(TimerRunInProgress(event.duration));
     } else {
-      await _playSound('end.mp3');
+      _playSound('end.mp3'); // Fire and forget
       emit(const TimerRunComplete());
     }
   }
 
   Future<void> _playSound(String sound) async {
-    await _audioPlayer.play(AssetSource('sounds/$sound'));
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/$sound'));
+    } catch (e) {
+      print('Error playing sound $sound: $e');
+    }
   }
 }

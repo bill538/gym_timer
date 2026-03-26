@@ -46,15 +46,15 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   void _onStarted(CircuitTimerStarted event, Emitter<CircuitTimerState> emit) async {
     for (int i = 3; i > 0; i--) {
       emit(CircuitTimerInitial(i, 1, 1, "Get Ready"));
-      await _playSound('beep.mp3');
+      _playSound('beep.mp3');
       await Future.delayed(const Duration(seconds: 1));
     }
-    await _playSound('start.mp3');
+    _playSound('start.mp3');
     _startNextSegment(emit, 1, 1, "Work", workTime);
   }
 
   void _onPaused(CircuitTimerPause event, Emitter<CircuitTimerState> emit) {
-    if (state is CircuitTimerInProgress) {
+    if (state is CircuitTimerInProgress || state.currentState == "Get Ready") {
       _tickerSubscription?.pause();
       emit(CircuitTimerPaused(state.duration, state.currentRound, state.currentStation, state.currentState));
     }
@@ -76,7 +76,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
     if (event.duration > 0) {
       emit(CircuitTimerInProgress(event.duration, state.currentRound, state.currentStation, state.currentState));
     } else {
-      await _playSound('end.mp3');
+      _playSound('end.mp3');
       _determineNextState(emit);
     }
   }
@@ -106,6 +106,11 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   }
 
   Future<void> _playSound(String sound) async {
-    await _audioPlayer.play(AssetSource('sounds/$sound'));
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/$sound'));
+    } catch (e) {
+      print('Error playing sound $sound: $e');
+    }
   }
 }

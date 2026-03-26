@@ -117,81 +117,90 @@ class TabataTimerView extends StatelessWidget {
   Color _getBackgroundColor(String currentState) {
     if (currentState == "Work") return Colors.green;
     if (currentState == "Rest") return Colors.orange;
-    if (currentState == "Get Ready") return Colors.blue;
-    return Colors.grey;
+    if (currentState == "Get Ready") return const Color(0xFF40324B);
+    if (currentState == "Done!") return Colors.blue;
+    return const Color(0xFF40324B);
   }
 
   @override
   Widget build(BuildContext context) {
     final rounds = context.select((TabataTimerBloc bloc) => bloc.rounds);
     
-    return Scaffold(
-      appBar: AppBar(title: const Text('Tabata Workout')),
-      body: BlocBuilder<TabataTimerBloc, TabataTimerState>(
-        builder: (context, state) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            color: _getBackgroundColor(state.currentState),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Round ${state.currentRound} / $rounds',
-                    style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    state.currentState,
-                    style: const TextStyle(
-                        fontSize: 60,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '${state.duration}',
-                    style: const TextStyle(
-                        fontSize: 150,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (state is! TabataTimerComplete)
+    return BlocListener<TabataTimerBloc, TabataTimerState>(
+      listener: (context, state) {
+        if (state is TabataTimerComplete) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Tabata Workout')),
+        body: BlocBuilder<TabataTimerBloc, TabataTimerState>(
+          builder: (context, state) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              color: _getBackgroundColor(state.currentState),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Round ${state.currentRound} / $rounds',
+                      style: const TextStyle(
+                          fontSize: 40,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      state.currentState,
+                      style: const TextStyle(
+                          fontSize: 60,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${state.duration}',
+                      style: const TextStyle(
+                          fontSize: 150,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (state is! TabataTimerComplete && state.currentState != "Done!")
+                            IconButton(
+                              icon: Icon(state is TabataTimerInProgress ? Icons.pause : Icons.play_arrow),
+                              iconSize: 60,
+                              color: Colors.white,
+                              onPressed: () {
+                                if (state is TabataTimerInProgress) {
+                                  context.read<TabataTimerBloc>().add(const TabataTimerPause());
+                                } else {
+                                  context.read<TabataTimerBloc>().add(const TabataTimerResumed());
+                                }
+                              },
+                            ),
+                          const SizedBox(width: 40),
+                          if (state.currentState != "Done!")
                           IconButton(
-                            icon: Icon(state is TabataTimerInProgress ? Icons.pause : Icons.play_arrow),
+                            icon: const Icon(Icons.refresh),
                             iconSize: 60,
                             color: Colors.white,
-                            onPressed: () {
-                              if (state is TabataTimerInProgress) {
-                                context.read<TabataTimerBloc>().add(const TabataTimerPause());
-                              } else {
-                                context.read<TabataTimerBloc>().add(const TabataTimerResumed());
-                              }
-                            },
+                            onPressed: () => context.read<TabataTimerBloc>().add(const TabataTimerReset()),
                           ),
-                        const SizedBox(width: 40),
-                        IconButton(
-                          icon: const Icon(Icons.refresh),
-                          iconSize: 60,
-                          color: Colors.white,
-                          onPressed: () => context.read<TabataTimerBloc>().add(const TabataTimerReset()),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

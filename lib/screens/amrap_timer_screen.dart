@@ -11,7 +11,7 @@ class AmrapTimerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TimerBloc(ticker: const Ticker()),
+      create: (_) => TimerBloc(ticker: const Ticker())..add(TimerStarted(duration: totalTime * 60)),
       child: AmrapTimerView(totalTime: totalTime),
     );
   }
@@ -30,11 +30,10 @@ class AmrapTimerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<TimerBloc>().add(TimerStarted(duration: totalTime * 60));
     return Scaffold(
       appBar: AppBar(title: const Text('AMRAP Workout')),
       body: Container(
-        color: Colors.deepPurple,
+        color: const Color(0xFF40324B),
         child: Center(
           child: BlocBuilder<TimerBloc, TimerState>(
             builder: (context, state) {

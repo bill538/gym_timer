@@ -26,3 +26,7 @@ class TabataTimerPaused extends TabataTimerState {
 class TabataTimerComplete extends TabataTimerState {
   const TabataTimerComplete() : super(0, 0, "Finished");
 }
+
+class TabataTimerFinished extends TabataTimerState {
+  const TabataTimerFinished() : super(0, 0, "Done!");
+}

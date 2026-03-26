@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gym_timer/widgets/workout_card.dart';
 import 'package:gym_timer/screens/tabata_setup_screen.dart';
 import 'package:gym_timer/screens/emom_setup_screen.dart';
 import 'package:gym_timer/screens/amrap_setup_screen.dart';
 import 'package:gym_timer/screens/circuit_setup_screen.dart';
-import 'package:gym_timer/services/cast_service.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -14,26 +16,56 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  late final CastService _castService;
+  late String _timeString;
 
   @override
   void initState() {
     super.initState();
-    _castService = CastService();
+    _timeString = _formatDateTime(DateTime.now());
+    Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
   }
 
-  @override
-  void dispose() {
-    _castService.dispose();
-    super.dispose();
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    setState(() {
+      _timeString = formattedDateTime;
+    });
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('hh:mm:ss').format(dateTime);
+  }
+
+  Future<void> _launchUrl() async {
+    final Uri url = Uri.parse('https://www.21-boom.com/');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workout Setup'),
-        backgroundColor: const Color(0xFF121212),
+        title: GestureDetector(
+          onTap: _launchUrl,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/images/21boom.png',
+                height: 32,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                '21BOOM',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: const Color(0xFF40324B),
         elevation: 0,
         actions: [
           IconButton(
@@ -46,67 +78,83 @@ class _SetupScreenState extends State<SetupScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          children: [
-            WorkoutCard(
-              title: 'TABATA',
-              subtitle: '20s Work / 10s Rest',
-              icon: Icons.flash_on,
-              glowColor: Colors.blue.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const TabataSetupScreen()),
-                );
-              },
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+                children: [
+                  WorkoutCard(
+                    title: 'TABATA',
+                    subtitle: '20s Work / 10s Rest',
+                    icon: Icons.flash_on,
+                    glowColor: Colors.blue.shade400,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TabataSetupScreen()),
+                      );
+                    },
+                  ),
+                  WorkoutCard(
+                    title: 'EMOM',
+                    subtitle: 'Every Minute on the Minute',
+                    icon: Icons.fitness_center,
+                    glowColor: Colors.yellow.shade400,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EmomSetupScreen()),
+                      );
+                    },
+                  ),
+                  WorkoutCard(
+                    title: 'AMRAP',
+                    subtitle: 'As Many Reps As Possible',
+                    icon: Icons.timer,
+                    glowColor: Colors.green.shade400,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AmrapSetupScreen()),
+                      );
+                    },
+                  ),
+                  WorkoutCard(
+                    title: 'CIRCUIT',
+                    subtitle: 'Variable Intervals',
+                    icon: Icons.sync,
+                    glowColor: Colors.orange.shade400,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CircuitSetupScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-            WorkoutCard(
-              title: 'EMOM',
-              subtitle: 'Every Minute on the Minute',
-              icon: Icons.fitness_center,
-              glowColor: Colors.yellow.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const EmomSetupScreen()),
-                );
-              },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              _timeString,
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            WorkoutCard(
-              title: 'AMRAP',
-              subtitle: 'As Many Reps As Possible',
-              icon: Icons.timer,
-              glowColor: Colors.green.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AmrapSetupScreen()),
-                );
-              },
-            ),
-            WorkoutCard(
-              title: 'CIRCUIT',
-              subtitle: 'Variable Intervals',
-              icon: Icons.sync,
-              glowColor: Colors.orange.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CircuitSetupScreen()),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
