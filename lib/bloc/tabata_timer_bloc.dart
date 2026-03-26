@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gym_timer/ticker/ticker.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:gym_timer/services/cast_service.dart';
 
 part 'tabata_timer_event.dart';
 part 'tabata_timer_state.dart';
@@ -36,12 +37,14 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   Future<void> close() {
     _tickerSubscription?.cancel();
     _audioPlayer.dispose();
+    CastService.instance.updateIdle();
     return super.close();
   }
 
   void _onStarted(TabataTimerStarted event, Emitter<TabataTimerState> emit) async {
     for (int i = 3; i > 0; i--) {
       emit(TabataTimerInitial(i, 1, "Get Ready"));
+      _updateCast(i, 1, "Get Ready");
       _playSound('beep.mp3');
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -53,6 +56,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
     if (state is TabataTimerInProgress || state.currentState == "Get Ready") {
       _tickerSubscription?.pause();
       emit(TabataTimerPaused(state.duration, state.currentRound, state.currentState));
+      _updateCast(state.duration, state.currentRound, state.currentState, isPaused: true);
     }
   }
 
@@ -60,6 +64,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
     if (state is TabataTimerPaused) {
       _tickerSubscription?.resume();
       emit(TabataTimerInProgress(state.duration, state.currentRound, state.currentState));
+      _updateCast(state.duration, state.currentRound, state.currentState);
     }
   }
 
@@ -71,6 +76,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   void _onTicked(_TabataTimerTicked event, Emitter<TabataTimerState> emit) async {
     if (event.duration > 0) {
       emit(TabataTimerInProgress(event.duration, state.currentRound, state.currentState));
+      _updateCast(event.duration, state.currentRound, state.currentState);
     } else {
       _playSound('end.mp3');
       await _determineNextState(emit);
@@ -83,6 +89,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
         _startNextSegment(emit, state.currentRound, "Rest", restTime);
       } else {
         emit(const TabataTimerFinished());
+        _updateCast(0, rounds, "Finished");
         await Future.delayed(const Duration(seconds: 30));
         emit(const TabataTimerComplete());
       }
@@ -93,8 +100,40 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
 
   void _startNextSegment(Emitter<TabataTimerState> emit, int round, String currentState, int duration) {
     emit(TabataTimerInProgress(duration, round, currentState));
+    _updateCast(duration, round, currentState);
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker.tick(ticks: duration).listen((d) => add(_TabataTimerTicked(duration: d)));
+  }
+
+  void _updateCast(int duration, int round, String currentState, {bool isPaused = false}) {
+    String color;
+    if (isPaused) {
+      color = "#FFEB3B"; // Yellow for pause
+    } else {
+      switch (currentState) {
+        case "Work":
+          color = "#90EE90"; // Light Green
+          break;
+        case "Rest":
+        case "Get Ready":
+          color = "#F44336"; // Red
+          break;
+        case "Finished":
+        case "Done!":
+          color = "#2196F3"; // Blue
+          break;
+        default:
+          color = "#40324B"; // Primary
+      }
+    }
+
+    CastService.instance.updateWorkout(
+      time: duration.toString(),
+      state: isPaused ? "Paused" : currentState,
+      round: round,
+      totalRounds: rounds,
+      backgroundColor: color,
+    );
   }
 
   Future<void> _playSound(String sound) async {

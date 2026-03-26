@@ -11,7 +11,10 @@ class AmrapTimerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TimerBloc(ticker: const Ticker())..add(TimerStarted(duration: totalTime * 60)),
+      create: (_) => TimerBloc(
+        ticker: const Ticker(),
+        workoutType: "AMRAP",
+      )..add(TimerStarted(duration: totalTime * 60)),
       child: BlocListener<TimerBloc, TimerState>(
         listener: (context, state) {
           if (state is TimerRunFinished) {
