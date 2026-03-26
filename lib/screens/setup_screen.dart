@@ -146,14 +146,44 @@ class _SetupScreenState extends State<SetupScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(0),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: Text(
-                  _timeString,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1A1A),
+                  borderRadius: BorderRadius.circular(20.0),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.15),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    // Bottom/Right dark shadow for depth
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.8),
+                      blurRadius: 12,
+                      offset: const Offset(6, 6),
+                    ),
+                    // Top/Left light highlight for 3D edge
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.05),
+                      blurRadius: 1,
+                      offset: const Offset(-2, -2),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0), // Padding to decrease font by ~10%
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        _timeString,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
