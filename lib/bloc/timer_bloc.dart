@@ -71,8 +71,10 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     if (event.duration > 0) {
       emit(TimerRunInProgress(event.duration));
     } else {
-      _playSound('end.mp3'); // Fire and forget
+      _playSound('end.mp3');
       emit(const TimerRunComplete());
+      await Future.delayed(const Duration(seconds: 30));
+      emit(const TimerRunFinished());
     }
   }
 

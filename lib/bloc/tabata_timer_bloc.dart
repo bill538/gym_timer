@@ -73,19 +73,18 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       emit(TabataTimerInProgress(event.duration, state.currentRound, state.currentState));
     } else {
       _playSound('end.mp3');
-      _determineNextState(emit);
+      await _determineNextState(emit);
     }
   }
   
-  void _determineNextState(Emitter<TabataTimerState> emit) {
+  Future<void> _determineNextState(Emitter<TabataTimerState> emit) async {
     if (state.currentState == "Work") {
       if (state.currentRound < rounds) {
         _startNextSegment(emit, state.currentRound, "Rest", restTime);
       } else {
         emit(const TabataTimerFinished());
-        Future.delayed(const Duration(seconds: 30), () {
-          emit(const TabataTimerComplete());
-        });
+        await Future.delayed(const Duration(seconds: 30));
+        emit(const TabataTimerComplete());
       }
     } else if (state.currentState == "Rest") {
       _startNextSegment(emit, state.currentRound + 1, "Work", workTime);

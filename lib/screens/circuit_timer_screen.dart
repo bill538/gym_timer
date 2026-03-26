@@ -30,7 +30,14 @@ class CircuitTimerScreen extends StatelessWidget {
         rounds: rounds,
         restBetweenRounds: restBetweenRounds,
       )..add(const CircuitTimerStarted(duration: 0)),
-      child: const CircuitTimerView(),
+      child: BlocListener<CircuitTimerBloc, CircuitTimerState>(
+        listener: (context, state) {
+          if (state is CircuitTimerFinished) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
+        child: const CircuitTimerView(),
+      ),
     );
   }
 }

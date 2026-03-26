@@ -77,11 +77,11 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
       emit(CircuitTimerInProgress(event.duration, state.currentRound, state.currentStation, state.currentState));
     } else {
       _playSound('end.mp3');
-      _determineNextState(emit);
+      await _determineNextState(emit);
     }
   }
   
-  void _determineNextState(Emitter<CircuitTimerState> emit) {
+  Future<void> _determineNextState(Emitter<CircuitTimerState> emit) async {
     if (state.currentState == "Work") {
       if (state.currentStation < stations) {
         _startNextSegment(emit, state.currentRound, state.currentStation + 1, "Rest", restTime);
@@ -90,6 +90,8 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
           _startNextSegment(emit, state.currentRound + 1, 1, "Round Rest", restBetweenRounds);
         } else {
           emit(const CircuitTimerComplete());
+          await Future.delayed(const Duration(seconds: 30));
+          emit(const CircuitTimerFinished());
         }
       }
     } else if (state.currentState == "Rest") {

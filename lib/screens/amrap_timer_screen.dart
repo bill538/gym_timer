@@ -12,7 +12,14 @@ class AmrapTimerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => TimerBloc(ticker: const Ticker())..add(TimerStarted(duration: totalTime * 60)),
-      child: AmrapTimerView(totalTime: totalTime),
+      child: BlocListener<TimerBloc, TimerState>(
+        listener: (context, state) {
+          if (state is TimerRunFinished) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
+        child: AmrapTimerView(totalTime: totalTime),
+      ),
     );
   }
 }

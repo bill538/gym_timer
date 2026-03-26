@@ -129,7 +129,7 @@ class TabataTimerView extends StatelessWidget {
     return BlocListener<TabataTimerBloc, TabataTimerState>(
       listener: (context, state) {
         if (state is TabataTimerComplete) {
-          Navigator.pop(context);
+          Navigator.of(context).popUntil((route) => route.isFirst);
         }
       },
       child: Scaffold(

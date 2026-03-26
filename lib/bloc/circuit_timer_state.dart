@@ -27,3 +27,7 @@ class CircuitTimerPaused extends CircuitTimerState {
 class CircuitTimerComplete extends CircuitTimerState {
   const CircuitTimerComplete() : super(0, 0, 0, "Finished");
 }
+
+class CircuitTimerFinished extends CircuitTimerState {
+  const CircuitTimerFinished() : super(0, 0, 0, "Done!");
+}

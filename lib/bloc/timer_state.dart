@@ -34,6 +34,10 @@ class TimerRunComplete extends TimerState {
   const TimerRunComplete() : super(0);
 }
 
+class TimerRunFinished extends TimerState {
+  const TimerRunFinished() : super(0);
+}
+
 class TimerCountdown extends TimerState {
   const TimerCountdown(int duration) : super(duration);
 

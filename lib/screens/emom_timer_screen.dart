@@ -12,7 +12,14 @@ class EmomTimerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => TimerBloc(ticker: const Ticker())..add(TimerStarted(duration: minutes * 60)),
-      child: EmomTimerView(minutes: minutes),
+      child: BlocListener<TimerBloc, TimerState>(
+        listener: (context, state) {
+          if (state is TimerRunFinished) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
+        child: EmomTimerView(minutes: minutes),
+      ),
     );
   }
 }
