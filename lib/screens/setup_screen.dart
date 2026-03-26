@@ -148,40 +148,39 @@ class _SetupScreenState extends State<SetupScreen> {
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-                child: IntrinsicWidth(
-                  child: IntrinsicHeight(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1A1A1A),
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.8),
-                            blurRadius: 10,
-                            offset: const Offset(4, 4),
-                          ),
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.05),
-                            blurRadius: 1,
-                            offset: const Offset(-1, -1),
-                          ),
-                        ],
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.15),
+                        width: 2,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Text(
-                            _timeString,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              fontFamily: 'monospace',
-                            ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.8),
+                          blurRadius: 10,
+                          offset: const Offset(4, 4),
+                        ),
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.05),
+                          blurRadius: 1,
+                          offset: const Offset(-1, -1),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          _timeString,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            fontFamily: 'monospace',
                           ),
                         ),
                       ),
