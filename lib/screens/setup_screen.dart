@@ -81,7 +81,7 @@ class _SetupScreenState extends State<SetupScreen> {
       body: Column(
         children: [
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
@@ -146,10 +146,10 @@ class _SetupScreenState extends State<SetupScreen> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: FittedBox(
                   fit: BoxFit.contain,
                   child: Text(
@@ -157,6 +157,7 @@ class _SetupScreenState extends State<SetupScreen> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'monospace',
+                      color: Colors.white,
                     ),
                   ),
                 ),
