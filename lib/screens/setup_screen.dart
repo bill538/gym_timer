@@ -79,6 +79,10 @@ class _SetupScreenState extends State<SetupScreen> {
                     GoogleCastSessionManager.instance.endSessionAndStopCasting();
                   } else {
                     GoogleCastDiscoveryManager.instance.startDiscovery();
+                    // Showing a snackbar to guide the user as we are using a manual icon instead of GoogleCastButton
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Searching for Cast devices...')),
+                    );
                   }
                 },
                 icon: Icon(isConnected ? Icons.cast_connected : Icons.cast),
