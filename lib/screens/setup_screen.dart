@@ -8,6 +8,7 @@ import 'package:gym_timer/screens/circuit_setup_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -74,6 +75,11 @@ class _SetupScreenState extends State<SetupScreen> {
                       onTap: () async {
                         try {
                           await GoogleCastSessionManager.instance.startSessionWithDevice(device);
+                          // Save device ID for automatic reconnection
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setString('last_cast_device_id', device.deviceID);
+                          await prefs.setString('last_cast_device_name', device.friendlyName);
+                          
                           Navigator.pop(context);
                           ScaffoldMessenger.of(this.context).showSnackBar(
                             SnackBar(content: Text('Connected to ${device.friendlyName}')),
