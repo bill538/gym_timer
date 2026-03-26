@@ -45,6 +45,65 @@ class _SetupScreenState extends State<SetupScreen> {
     }
   }
 
+  void _showDevicePicker() {
+    GoogleCastDiscoveryManager.instance.startDiscovery();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Connect to Chromecast'),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300,
+            child: StreamBuilder<List<GoogleCastDevice>>(
+              stream: GoogleCastDiscoveryManager.instance.devicesStream,
+              builder: (context, snapshot) {
+                final devices = snapshot.data ?? [];
+                if (devices.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: devices.length,
+                  itemBuilder: (context, index) {
+                    final device = devices[index];
+                    return ListTile(
+                      title: Text(device.friendlyName),
+                      subtitle: Text(device.modelName ?? ''),
+                      leading: const Icon(Icons.cast),
+                      onTap: () async {
+                        try {
+                          await GoogleCastSessionManager.instance.startSessionWithDevice(device);
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            SnackBar(content: Text('Connected to ${device.friendlyName}')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            SnackBar(content: Text('Error connecting: $e')),
+                          );
+                        }
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                GoogleCastDiscoveryManager.instance.stopDiscovery();
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    ).then((_) => GoogleCastDiscoveryManager.instance.stopDiscovery());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,19 +131,11 @@ class _SetupScreenState extends State<SetupScreen> {
           StreamBuilder(
             stream: GoogleCastSessionManager.instance.currentSessionStream,
             builder: (context, snapshot) {
-              final bool isConnected = GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected;
+              final isConnected = GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected;
               return IconButton(
-                onPressed: () {
-                  if (isConnected) {
-                    GoogleCastSessionManager.instance.endSessionAndStopCasting();
-                  } else {
-                    GoogleCastDiscoveryManager.instance.startDiscovery();
-                    // Showing a snackbar to guide the user as we are using a manual icon instead of GoogleCastButton
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Searching for Cast devices...')),
-                    );
-                  }
-                },
+                onPressed: isConnected 
+                  ? () => GoogleCastSessionManager.instance.endSessionAndStopCasting()
+                  : _showDevicePicker,
                 icon: Icon(isConnected ? Icons.cast_connected : Icons.cast),
               );
             },

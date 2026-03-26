@@ -3,19 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gym_timer/screens/splash_screen.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  const appId = GoogleCastDiscoveryCriteria.kDefaultApplicationId;
-  
-  // Minimal config based on what we've seen
-  await GoogleCastContext.instance.setSharedInstanceWithOptions(
-    GoogleCastOptions(
-      // The constructor takes named parameters but we need to know what they are.
-      // Assuming it might have a discoveryCriteria or similar.
-    ),
-  );
-
   runApp(const GymTimerApp());
 }
 
