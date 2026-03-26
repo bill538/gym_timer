@@ -7,6 +7,7 @@ import 'package:gym_timer/screens/amrap_setup_screen.dart';
 import 'package:gym_timer/screens/circuit_setup_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -22,7 +23,7 @@ class _SetupScreenState extends State<SetupScreen> {
   void initState() {
     super.initState();
     _timeString = _formatDateTime(DateTime.now());
-    Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
   }
 
   void _getTime() {
@@ -68,11 +69,19 @@ class _SetupScreenState extends State<SetupScreen> {
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.cast),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cast feature coming soon!')),
+          StreamBuilder(
+            stream: GoogleCastSessionManager.instance.currentSessionStream,
+            builder: (context, snapshot) {
+              final bool isConnected = GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected;
+              return IconButton(
+                onPressed: () {
+                  if (isConnected) {
+                    GoogleCastSessionManager.instance.endSessionAndStopCasting();
+                  } else {
+                    GoogleCastDiscoveryManager.instance.startDiscovery();
+                  }
+                },
+                icon: Icon(isConnected ? Icons.cast_connected : Icons.cast),
               );
             },
           ),
