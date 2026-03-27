@@ -28,6 +28,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -43,4 +44,7 @@ flutter {
     source = "../.."
 }
 
-apply(from = project(":flutter_chrome_cast").projectDir.resolve("build.gradle"))
+dependencies {
+    implementation("com.google.android.gms:play-services-cast-framework:21.4.0")
+    implementation("androidx.mediarouter:mediarouter:1.6.0")
+}

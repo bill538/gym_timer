@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Gym Timer Receiver</title>
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <style>
+        body {
+            background-color: #40324B;
+            color: white;
+            font-family: 'monospace';
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+        #clock {
+            font-size: 35vw; /* Extremely large, ~70% width proportional */
+            font-weight: 900;
+            text-align: center;
+            line-height: 1;
+        }
+        #details {
+            font-size: 8vw;
+            margin-top: 40px;
+            text-transform: uppercase;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+        #rounds {
+            font-size: 6vw;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="clock">00:00:00</div>
+    <div id="details">Ready to Start</div>
+    <div id="rounds"></div>
+
+    <script>
+        const context = cast.framework.CastReceiverContext.getInstance();
+        const clockElement = document.getElementById('clock');
+        const detailsElement = document.getElementById('details');
+        const roundsElement = document.getElementById('rounds');
+        const NAMESPACE = 'urn:x-cast:com.example.gym_timer';
+
+        function formatTime(date) {
+            const h = String(date.getHours()).padStart(2, '0');
+            const m = String(date.getMinutes()).padStart(2, '0');
+            const s = String(date.getSeconds()).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function updateLiveClock() {
+            clockElement.innerText = formatTime(new Date());
+        }
+
+        let clockInterval = setInterval(updateLiveClock, 1000);
+
+        context.addCustomMessageListener(NAMESPACE, (event) => {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'workout') {
+                // Stop live clock during workout
+                if (clockInterval) {
+                    clearInterval(clockInterval);
+                    clockInterval = null;
+                }
+                
+                document.body.style.backgroundColor = data.backgroundColor || '#40324B';
+                clockElement.innerText = data.time;
+                detailsElement.innerText = data.state;
+                roundsElement.innerText = `Round ${data.round} / ${data.totalRounds}`;
+            } else if (data.type === 'idle') {
+                // Return to live clock
+                document.body.style.backgroundColor = '#40324B';
+                detailsElement.innerText = 'Ready to Start';
+                roundsElement.innerText = '';
+                if (!clockInterval) {
+                    updateLiveClock();
+                    clockInterval = setInterval(updateLiveClock, 1000);
+                }
+            }
+        });
+
+        // Start receiver
+        context.start();
+    </script>
+</body>
+</html>

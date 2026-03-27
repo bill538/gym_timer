@@ -1,71 +1,52 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
-import 'package:flutter/foundation.dart';
 
 class CastService {
-  final FlutterChromeCast _chromeCast;
-  final String _namespace = 'urn:x-cast:com.gymtimer.data';
-  GoogleCastDevice? _connectedDevice;
-
-  // Singleton pattern
-  CastService._privateConstructor() : _chromeCast = FlutterChromeCast.instance;
-  static final CastService _instance = CastService._privateConstructor();
-  factory CastService() {
-    return _instance;
-  }
-
-  void init() {
-    _chromeCast.onDeviceConnected.listen((device) {
-      _connectedDevice = device;
-      _chromeCast.requestSession();
-    });
-
-    _chromeCast.onDeviceDisconnected.listen((device) {
-      _connectedDevice = null;
-    });
-
-    _chromeCast.onSessionStarted.listen((_) {
-      debugPrint("Session started, ready to send messages.");
-    });
-  }
-
-  Future<void> sendMessage(Map<String, dynamic> message) async {
-    if (_connectedDevice == null) {
-      debugPrint("No device connected, cannot send message.");
-      return;
-    }
-
-    try {
-      await _chromeCast.sendMessage(
-        namespace: _namespace,
-        message: jsonEncode(message),
-      );
-      debugPrint('Successfully sent message: $message');
-    } catch (e) {
-      debugPrint('Error sending message: $e');
-    }
-  }
-
-  // Example of sending the specific timer update payload
-  void sendTimerUpdate({
-    required String timeLeft,
-    required double progress,
-    required String state,
-    required int currentRound,
-    required int totalRounds,
-    required String nextExercise,
-  }) {
-    final payload = {
-      "command": "UPDATE_TIMER",
-      "data": {
-        "timeLeft": timeLeft,
-        "progress": progress,
-        "state": state,
-        "currentRound": currentRound,
-        "totalRounds": totalRounds,
-        "nextExercise": nextExercise
+  static final CastService instance = CastService._internal();
+  CastService._internal() {
+    // Automatically send idle message when connected
+    GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
+      if (session != null && GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
+        updateIdle();
       }
-    };
-    sendMessage(payload);
+    });
+  }
+
+  static const _channel = MethodChannel('com.example.gym_timer/cast');
+  static const _namespace = 'urn:x-cast:com.example.gym_timer';
+
+  Future<void> updateIdle() async {
+    await _sendMessage({
+      'type': 'idle',
+    });
+  }
+
+  Future<void> updateWorkout({
+    required String time,
+    required String state,
+    required int round,
+    required int totalRounds,
+    required String backgroundColor,
+  }) async {
+    await _sendMessage({
+      'type': 'workout',
+      'time': time,
+      'state': state,
+      'round': round,
+      'totalRounds': totalRounds,
+      'backgroundColor': backgroundColor,
+    });
+  }
+
+  Future<void> _sendMessage(Map<String, dynamic> data) async {
+    try {
+      await _channel.invokeMethod('sendCastMessage', {
+        'namespace': _namespace,
+        'message': jsonEncode(data),
+      });
+    } catch (e) {
+      // Handle error (e.g., no active session)
+    }
   }
 }
