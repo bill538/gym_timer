@@ -17,17 +17,31 @@ class MainActivity : FlutterFragmentActivity() {
                 val namespace = call.argument<String>("namespace")
                 val message = call.argument<String>("message")
                 val castSession: CastSession? = CastContext.getSharedInstance(this).sessionManager.currentCastSession
-                if (castSession != null && namespace != null && message != null) {
+                
+                if (castSession == null) {
+                    println("MainActivity: CAST_ERROR - No active session found")
+                    result.error("UNAVAILABLE", "No active Cast session", null)
+                    return@setMethodCallHandler
+                }
+
+                if (!castSession.isConnected) {
+                    println("MainActivity: CAST_ERROR - Session found but not connected")
+                    result.error("NOT_CONNECTED", "Session not connected", null)
+                    return@setMethodCallHandler
+                }
+
+                if (namespace != null && message != null) {
                     castSession.sendMessage(namespace, message)
                         .setResultCallback { status ->
                             if (status.isSuccess) {
                                 result.success(true)
                             } else {
+                                println("MainActivity: CAST_ERROR - ${status.statusMessage}")
                                 result.error("CAST_ERROR", status.statusMessage, null)
                             }
                         }
                 } else {
-                    result.error("UNAVAILABLE", "No active Cast session", null)
+                    result.error("INVALID_PARAMS", "Namespace or message null", null)
                 }
             } else {
                 result.notImplemented()

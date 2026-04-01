@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gym_timer/screens/splash_screen.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
+import 'package:gym_timer/services/cast_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  CastService.initialize();
   runApp(const GymTimerApp());
 }
 

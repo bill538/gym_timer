@@ -4,17 +4,19 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 class CastService {
   static final CastService instance = CastService._internal();
-  CastService._internal() {
-    // Automatically send idle message when connected
-    GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
-      if (session != null && GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
-        updateIdle();
-      }
-    });
-  }
+  CastService._internal();
 
   static const _channel = MethodChannel('com.example.gym_timer/cast');
   static const _namespace = 'urn:x-cast:com.example.gym_timer';
+
+  static void initialize() {
+    GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
+      print('CastService: Session update received, State: ${GoogleCastSessionManager.instance.connectionState}');
+      if (session != null && GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
+        CastService.instance.updateIdle();
+      }
+    });
+  }
 
   Future<void> updateIdle({String? time}) async {
     await _sendMessage({
@@ -41,13 +43,15 @@ class CastService {
   }
 
   Future<void> _sendMessage(Map<String, dynamic> data) async {
+    print('CastService: Sending message: $data');
     try {
-      await _channel.invokeMethod('sendCastMessage', {
+      final result = await _channel.invokeMethod('sendCastMessage', {
         'namespace': _namespace,
         'message': jsonEncode(data),
       });
+      print('CastService: Message sent successfully: $result');
     } catch (e) {
-      // Handle error (e.g., no active session)
+      print('CastService: Error sending message: $e');
     }
   }
 }

@@ -66,7 +66,14 @@
         let clockInterval = setInterval(updateLiveClock, 1000);
 
         context.addCustomMessageListener(NAMESPACE, (event) => {
-            const data = JSON.parse(event.data);
+            console.log('Received message:', event.data);
+            let data;
+            try {
+                data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+            } catch (e) {
+                console.error('Error parsing message:', e);
+                return;
+            }
             
             if (data.type === 'workout') {
                 // Stop live clock during workout
