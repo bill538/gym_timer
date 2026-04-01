@@ -46,6 +46,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   }
 
   void _onStarted(CircuitTimerStarted event, Emitter<CircuitTimerState> emit) async {
+    _updateCast(0, 1, 1, "Get Ready");
     _playSound('beep.mp3');
     for (int i = 3; i > 0; i--) {
       emit(CircuitTimerInitial(i, 1, 1, "Get Ready"));
