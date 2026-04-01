@@ -66,7 +66,17 @@ class CircuitTimerView extends StatelessWidget {
     final stations = context.select((CircuitTimerBloc bloc) => bloc.stations);
     
     return Scaffold(
-      appBar: AppBar(title: const Text('Circuit Workout')),
+      appBar: AppBar(
+        title: const Text('Circuit Workout'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Signal idle to Chromecast before popping
+            CastService.instance.updateIdle();
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: BlocBuilder<CircuitTimerBloc, CircuitTimerState>(
         builder: (context, state) {
           return AnimatedContainer(
