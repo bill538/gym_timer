@@ -133,7 +133,17 @@ class TabataTimerView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Tabata Workout')),
+        appBar: AppBar(
+          title: const Text('Tabata Workout'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Signal idle to Chromecast before popping
+              CastService.instance.updateIdle();
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         body: BlocBuilder<TabataTimerBloc, TabataTimerState>(
           builder: (context, state) {
             return AnimatedContainer(
