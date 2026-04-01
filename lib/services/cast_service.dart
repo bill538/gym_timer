@@ -11,7 +11,7 @@ class CastService {
 
   static void initialize() {
     GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
-      print('CastService: Session update: ${session?.deviceID}, State: ${GoogleCastSessionManager.instance.connectionState}');
+      print('CastService: Session update received, State: ${GoogleCastSessionManager.instance.connectionState}');
       if (session != null && GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
         CastService.instance.updateIdle();
       }
