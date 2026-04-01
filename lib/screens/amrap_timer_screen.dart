@@ -41,7 +41,17 @@ class AmrapTimerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AMRAP Workout')),
+      appBar: AppBar(
+        title: const Text('AMRAP Workout'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Signal idle to Chromecast before popping
+            CastService.instance.updateIdle();
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: Container(
         color: const Color(0xFF40324B),
         child: Center(
