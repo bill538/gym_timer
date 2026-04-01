@@ -41,13 +41,15 @@ class CastService {
   }
 
   Future<void> _sendMessage(Map<String, dynamic> data) async {
+    print('CastService: Sending message: $data');
     try {
-      await _channel.invokeMethod('sendCastMessage', {
+      final result = await _channel.invokeMethod('sendCastMessage', {
         'namespace': _namespace,
         'message': jsonEncode(data),
       });
+      print('CastService: Message sent successfully: $result');
     } catch (e) {
-      // Handle error (e.g., no active session)
+      print('CastService: Error sending message: $e');
     }
   }
 }
