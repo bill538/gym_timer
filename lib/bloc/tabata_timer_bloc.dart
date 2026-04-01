@@ -42,11 +42,16 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   }
 
   void _onStarted(TabataTimerStarted event, Emitter<TabataTimerState> emit) async {
+    _playSound('beep.mp3');
     for (int i = 3; i > 0; i--) {
       emit(TabataTimerInitial(i, 1, "Get Ready"));
       _updateCast(i, 1, "Get Ready");
-      _playSound('beep.mp3');
-      await Future.delayed(const Duration(seconds: 1));
+      if (i > 1) {
+        await Future.delayed(const Duration(seconds: 1));
+        _playSound('beep.mp3');
+      } else {
+        await Future.delayed(const Duration(seconds: 1));
+      }
     }
     _playSound('start.mp3');
     _startNextSegment(emit, 1, "Work", workTime);

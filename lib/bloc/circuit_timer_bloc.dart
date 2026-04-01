@@ -46,11 +46,16 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   }
 
   void _onStarted(CircuitTimerStarted event, Emitter<CircuitTimerState> emit) async {
+    _playSound('beep.mp3');
     for (int i = 3; i > 0; i--) {
       emit(CircuitTimerInitial(i, 1, 1, "Get Ready"));
       _updateCast(i, 1, 1, "Get Ready");
-      _playSound('beep.mp3');
-      await Future.delayed(const Duration(seconds: 1));
+      if (i > 1) {
+        await Future.delayed(const Duration(seconds: 1));
+        _playSound('beep.mp3');
+      } else {
+        await Future.delayed(const Duration(seconds: 1));
+      }
     }
     _playSound('start.mp3');
     _startNextSegment(emit, 1, 1, "Work", workTime);
