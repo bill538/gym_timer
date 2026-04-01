@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gym_timer/services/cast_service.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -33,6 +34,11 @@ class _SetupScreenState extends State<SetupScreen> {
     setState(() {
       _timeString = formattedDateTime;
     });
+    
+    // Proactively send the current time to Chromecast if connected
+    if (GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
+      CastService.instance.updateIdle(time: formattedDateTime);
+    }
   }
 
   String _formatDateTime(DateTime dateTime) {

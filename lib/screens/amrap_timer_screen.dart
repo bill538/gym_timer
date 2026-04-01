@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym_timer/bloc/timer_bloc.dart';
+import 'package:gym_timer/services/cast_service.dart';
 import 'package:gym_timer/ticker/ticker.dart';
 
 class AmrapTimerScreen extends StatelessWidget {
@@ -41,7 +42,17 @@ class AmrapTimerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AMRAP Workout')),
+      appBar: AppBar(
+        title: const Text('AMRAP Workout'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Signal idle to Chromecast before popping
+            CastService.instance.updateIdle();
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: Container(
         color: const Color(0xFF40324B),
         child: Center(

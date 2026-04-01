@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym_timer/bloc/tabata_timer_bloc.dart';
 import 'package:gym_timer/ticker/ticker.dart';
+import 'package:gym_timer/services/cast_service.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class TabataSetupScreen extends StatefulWidget {
@@ -133,7 +134,17 @@ class TabataTimerView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Tabata Workout')),
+        appBar: AppBar(
+          title: const Text('Tabata Workout'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Signal idle to Chromecast before popping
+              CastService.instance.updateIdle();
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         body: BlocBuilder<TabataTimerBloc, TabataTimerState>(
           builder: (context, state) {
             return AnimatedContainer(

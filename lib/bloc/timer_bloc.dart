@@ -39,12 +39,20 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   void _onStarted(TimerStarted event, Emitter<TimerState> emit) async {
+    // Sync setup clock to Chromecast immediately on start to transition
+    _updateCast(0, "Get Ready");
+    
     // 3-second countdown
+    _playSound('beep.mp3');
     for (int i = 3; i > 0; i--) {
       emit(TimerCountdown(i));
       _updateCast(i, "Get Ready");
-      _playSound('beep.mp3'); // Fire and forget
-      await Future.delayed(const Duration(seconds: 1));
+      if (i > 1) {
+        await Future.delayed(const Duration(seconds: 1));
+        _playSound('beep.mp3');
+      } else {
+        await Future.delayed(const Duration(seconds: 1));
+      }
     }
     
     _playSound('start.mp3'); // Fire and forget

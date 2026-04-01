@@ -16,9 +16,10 @@ class CastService {
   static const _channel = MethodChannel('com.example.gym_timer/cast');
   static const _namespace = 'urn:x-cast:com.example.gym_timer';
 
-  Future<void> updateIdle() async {
+  Future<void> updateIdle({String? time}) async {
     await _sendMessage({
       'type': 'idle',
+      if (time != null) 'time': time,
     });
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym_timer/bloc/circuit_timer_bloc.dart';
+import 'package:gym_timer/services/cast_service.dart';
 import 'package:gym_timer/ticker/ticker.dart';
 
 class CircuitTimerScreen extends StatelessWidget {
@@ -66,7 +67,17 @@ class CircuitTimerView extends StatelessWidget {
     final stations = context.select((CircuitTimerBloc bloc) => bloc.stations);
     
     return Scaffold(
-      appBar: AppBar(title: const Text('Circuit Workout')),
+      appBar: AppBar(
+        title: const Text('Circuit Workout'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Signal idle to Chromecast before popping
+            CastService.instance.updateIdle();
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: BlocBuilder<CircuitTimerBloc, CircuitTimerState>(
         builder: (context, state) {
           return AnimatedContainer(
