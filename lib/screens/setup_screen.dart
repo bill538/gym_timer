@@ -8,6 +8,7 @@ import 'package:gym_timer/screens/circuit_setup_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_timer/services/cast_service.dart';
 
 class SetupScreen extends StatefulWidget {
