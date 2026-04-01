@@ -84,7 +84,15 @@
                 document.body.style.backgroundColor = '#40324B';
                 detailsElement.innerText = 'Ready to Start';
                 roundsElement.innerText = '';
-                if (!clockInterval) {
+                
+                // If the app sends a specific time, display it; otherwise use local clock
+                if (data.time) {
+                    if (clockInterval) {
+                        clearInterval(clockInterval);
+                        clockInterval = null;
+                    }
+                    clockElement.innerText = data.time;
+                } else if (!clockInterval) {
                     updateLiveClock();
                     clockInterval = setInterval(updateLiveClock, 1000);
                 }
