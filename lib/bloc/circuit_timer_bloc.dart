@@ -148,8 +148,12 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
     if (currentState == "Work") displayState = "Go!";
     if (isPaused) displayState = "Paused";
 
+    final minutes = (duration / 60).floor().toString().padLeft(2, '0');
+    final seconds = (duration % 60).toString().padLeft(2, '0');
+    final timeStr = '$minutes:$seconds';
+
     CastService.instance.updateWorkout(
-      time: duration.toString(),
+      time: timeStr,
       state: "$displayState | Station $station/$stations",
       round: round,
       totalRounds: rounds,
@@ -162,7 +166,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
       await _audioPlayer.stop();
       await _audioPlayer.play(AssetSource('sounds/$sound'));
     } catch (e) {
-      print('Error playing sound $sound: $e');
+      // Ignore
     }
   }
 }

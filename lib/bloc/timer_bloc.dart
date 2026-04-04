@@ -118,14 +118,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       if (currentRound > totalRounds!) currentRound = totalRounds!;
     }
 
-    String timeStr;
-    if (workoutType == "AMRAP") {
-      final minutes = (duration / 60).floor().toString().padLeft(2, '0');
-      final remainingSeconds = (duration % 60).toString().padLeft(2, '0');
-      timeStr = '$minutes:$remainingSeconds';
-    } else {
-      timeStr = duration.toString();
-    }
+    final minutes = (duration / 60).floor().toString().padLeft(2, '0');
+    final seconds = (duration % 60).toString().padLeft(2, '0');
+    final timeStr = '$minutes:$seconds';
 
     CastService.instance.updateWorkout(
       time: timeStr,
@@ -141,7 +136,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       await _audioPlayer.stop();
       await _audioPlayer.play(AssetSource('sounds/$sound'));
     } catch (e) {
-      print('Error playing sound $sound: $e');
+      // Ignore
     }
   }
 }
