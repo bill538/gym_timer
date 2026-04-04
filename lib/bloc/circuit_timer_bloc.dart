@@ -41,7 +41,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   Future<void> close() {
     _tickerSubscription?.cancel();
     _audioPlayer.dispose();
-    CastService.instance.updateIdle();
+    CastService.instance.stopWorkout();
     return super.close();
   }
 
