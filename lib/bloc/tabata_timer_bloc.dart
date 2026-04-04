@@ -37,7 +37,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   Future<void> close() {
     _tickerSubscription?.cancel();
     _audioPlayer.dispose();
-    CastService.instance.updateIdle();
+    CastService.instance.stopWorkout();
     return super.close();
   }
 

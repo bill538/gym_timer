@@ -9,15 +9,14 @@ class CastService {
   static const _channel = MethodChannel('com.example.gym_timer/cast');
   static const _namespace = 'urn:x-cast:com.example.gym_timer';
 
+  bool isWorkoutActive = false;
+
   static void initialize() {
-    GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
-      if (session != null && GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
-        CastService.instance.updateIdle();
-      }
-    });
+    // No longer auto-sending updateIdle here as it overrides workout starts
   }
 
   Future<void> updateIdle({String? time}) async {
+    if (isWorkoutActive) return; // Prevent clock from showing during workout
     await _sendMessage({
       'type': 'idle',
       if (time != null) 'time': time,
@@ -31,6 +30,7 @@ class CastService {
     required int totalRounds,
     required String backgroundColor,
   }) async {
+    isWorkoutActive = true;
     await _sendMessage({
       'type': 'workout',
       'time': time,
@@ -39,6 +39,11 @@ class CastService {
       'totalRounds': totalRounds,
       'backgroundColor': backgroundColor,
     });
+  }
+
+  Future<void> stopWorkout() async {
+    isWorkoutActive = false;
+    await updateIdle();
   }
 
   Future<void> _sendMessage(Map<String, dynamic> data) async {

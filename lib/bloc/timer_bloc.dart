@@ -34,7 +34,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   Future<void> close() {
     _tickerSubscription?.cancel();
     _audioPlayer.dispose();
-    CastService.instance.updateIdle();
+    CastService.instance.stopWorkout(); // Use stopWorkout to flip flag
     return super.close();
   }
 
