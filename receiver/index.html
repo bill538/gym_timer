@@ -76,7 +76,7 @@
             }
             
             if (data.type === 'workout') {
-                // Return to hh:mm:ss if in workout mode (stop live current time)
+                // Stop any live clock updates
                 if (clockInterval) {
                     clearInterval(clockInterval);
                     clockInterval = null;
@@ -84,7 +84,7 @@
                 
                 document.body.style.backgroundColor = data.backgroundColor || '#40324B';
                 
-                // data.time is now passed as mm:ss from the app for sync
+                // DISPLAY ONLY THE WORKOUT TIMER (mm:ss or seconds as passed)
                 clockElement.innerText = data.time;
                 detailsElement.innerText = data.state;
                 roundsElement.innerText = `Round ${data.round} / ${data.totalRounds}`;
