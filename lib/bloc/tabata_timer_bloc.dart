@@ -133,8 +133,12 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       }
     }
 
+    final minutes = (duration / 60).floor().toString().padLeft(2, '0');
+    final seconds = (duration % 60).toString().padLeft(2, '0');
+    final timeStr = '$minutes:$seconds';
+
     CastService.instance.updateWorkout(
-      time: duration.toString(),
+      time: timeStr,
       state: isPaused ? "Paused" : currentState,
       round: round,
       totalRounds: rounds,
@@ -147,7 +151,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       await _audioPlayer.stop();
       await _audioPlayer.play(AssetSource('sounds/$sound'));
     } catch (e) {
-      print('Error playing sound $sound: $e');
+      // Ignore
     }
   }
 }

@@ -51,12 +51,12 @@ class _SplashScreenState extends State<SplashScreen> {
       final lastDeviceName = prefs.getString('last_cast_device_name');
       
       if (lastDeviceId != null && lastDeviceName != null) {
-        debugPrint('Remembered Cast device: $lastDeviceName ($lastDeviceId)');
+      debugPrint('Remembered Cast device: $lastDeviceName ($lastDeviceId)');
         // The Google Cast SDK usually handles reconnection automatically
         // if the device is found during initial discovery.
       }
     } catch (e) {
-      debugPrint('Error initializing Cast: $e');
+      // Ignore
     }
   }
 

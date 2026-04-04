@@ -1,5 +1,7 @@
 package com.example.gym_timer
 
+import android.webkit.WebView
+import android.os.Bundle
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -9,6 +11,12 @@ import com.google.android.gms.cast.framework.CastSession
 
 class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "com.example.gym_timer/cast"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Enable WebView debugging for inspection via chrome://inspect
+        WebView.setWebContentsDebuggingEnabled(true)
+    }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

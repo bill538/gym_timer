@@ -11,7 +11,6 @@ class CastService {
 
   static void initialize() {
     GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
-      print('CastService: Session update received, State: ${GoogleCastSessionManager.instance.connectionState}');
       if (session != null && GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected) {
         CastService.instance.updateIdle();
       }
@@ -43,15 +42,13 @@ class CastService {
   }
 
   Future<void> _sendMessage(Map<String, dynamic> data) async {
-    print('CastService: Sending message: $data');
     try {
-      final result = await _channel.invokeMethod('sendCastMessage', {
+      await _channel.invokeMethod('sendCastMessage', {
         'namespace': _namespace,
         'message': jsonEncode(data),
       });
-      print('CastService: Message sent successfully: $result');
     } catch (e) {
-      print('CastService: Error sending message: $e');
+      // Ignore
     }
   }
 }

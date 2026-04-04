@@ -104,6 +104,16 @@ class CircuitTimerView extends StatelessWidget {
                     '${state.duration}',
                     style: const TextStyle(fontSize: 120, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
+                  StreamBuilder(
+                    stream: Stream.periodic(const Duration(seconds: 1)),
+                    builder: (context, snapshot) {
+                      final now = DateTime.now();
+                      return Text(
+                        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}',
+                        style: const TextStyle(fontSize: 30, color: Colors.white70, fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 30),
                   if (state is! CircuitTimerComplete)
                     Row(
