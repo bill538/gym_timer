@@ -130,7 +130,7 @@ class _SetupScreenState extends State<SetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gym Timer', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
         actions: [
