@@ -130,23 +130,7 @@ class _SetupScreenState extends State<SetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
-          onTap: _launchUrl,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/21boom.png',
-                height: 32,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                '21BOOM',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
+        title: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
         actions: [

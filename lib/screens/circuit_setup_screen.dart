@@ -30,9 +30,9 @@ class _CircuitSetupScreenState extends State<CircuitSetupScreen> {
             children: <Widget>[
               _buildNumberPicker("Stations/Exercises", _stations, 1, 20, (value) => setState(() => _stations = value)),
               _buildNumberPicker("Work Time (s)", _workTime, 1, 300, (value) => setState(() => _workTime = value)),
-              _buildNumberPicker("Rest Between Stations (s)", _restTime, 0, 300, (value) => setState(() => _restTime = value)),
+              _buildNumberPicker("Rest Between\nStation (s)", _restTime, 0, 300, (value) => setState(() => _restTime = value)),
               _buildNumberPicker("Rounds", _rounds, 1, 100, (value) => setState(() => _rounds = value)),
-              _buildNumberPicker("Rest Between Rounds (s)", _restBetweenRounds, 0, 300, (value) => setState(() => _restBetweenRounds = value)),
+              _buildNumberPicker("Rest Between\nRounds (s)", _restBetweenRounds, 0, 300, (value) => setState(() => _restBetweenRounds = value)),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

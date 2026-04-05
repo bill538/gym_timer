@@ -34,6 +34,24 @@ class EmomTimerView extends StatelessWidget {
 
   const EmomTimerView({super.key, required this.minutes});
 
+  Color _getBackgroundColor(TimerState state) {
+    if (state is TimerRunPause) return const Color(0xFFEBEB3B);
+    if (state is TimerCountdown) return const Color(0xFFF44336);
+    if (state is TimerRunComplete) return const Color(0xFF2196F3);
+    // In standard TimerBloc, EMOM uses "Go!" status which we map to green.
+    // Standard Rest colors are handled in Tabata/Circuit.
+    return const Color(0xFF90EE90);
+  }
+
+  String _formatClockTime(DateTime now) {
+    int hour = now.hour;
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+    final String m = now.minute.toString().padLeft(2, '0');
+    final String s = now.second.toString().padLeft(2, '0');
+    return '$hour:$m:$s';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,98 +60,92 @@ class EmomTimerView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Signal idle to Chromecast before popping
-            CastService.instance.updateIdle();
+            CastService.instance.stopWorkout();
             Navigator.of(context).pop();
           },
         ),
       ),
-      body: Container(
-        color: const Color(0xFF40324B),
-        child: Center(
-          child: BlocBuilder<TimerBloc, TimerState>(
-            builder: (context, state) {
-              if (state is TimerCountdown) {
-                return Text(
-                  '${state.duration}',
-                  style: const TextStyle(fontSize: 150, color: Colors.white, fontWeight: FontWeight.bold),
-                );
-              }
-              if (state is TimerRunInProgress || state is TimerRunPause) {
-                final currentMinute = (minutes * 60 - state.duration) ~/ 60 + 1;
-                final currentTimeInMinute = 60 - (state.duration % 60);
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+      body: BlocBuilder<TimerBloc, TimerState>(
+        builder: (context, state) {
+          String status = "Go!";
+          bool isPaused = state is TimerRunPause;
+          if (state is TimerCountdown) status = "Get Ready";
+          if (state is TimerRunComplete) status = "Finished";
+
+          return Container(
+            color: _getBackgroundColor(state),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  if (state is TimerCountdown)
                     Text(
-                      'Minute $currentMinute / $minutes',
+                      '${state.duration}',
+                      style: const TextStyle(fontSize: 150, color: Colors.white, fontWeight: FontWeight.bold),
+                    )
+                  else if (state is TimerRunInProgress || state is TimerRunPause) ...[
+                    Text(
+                      'Minute ${(minutes * 60 - state.duration) ~/ 60 + 1} / $minutes',
                       style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      '$currentTimeInMinute',
+                      '${60 - (state.duration % 60)}',
                       style: const TextStyle(fontSize: 150, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
-                    StreamBuilder(
-                      stream: Stream.periodic(const Duration(seconds: 1)),
-                      builder: (context, snapshot) {
-                        final now = DateTime.now();
-                        return Text(
-                          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}',
-                          style: const TextStyle(fontSize: 37.5, color: Colors.white70, fontWeight: FontWeight.bold),
-                        );
-                      },
+                  ] else if (state is TimerRunComplete)
+                    const Text(
+                      'Workout Complete!',
+                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 30),
-                    Row(
+                  
+                  const Spacer(),
+                  
+                  StreamBuilder(
+                    stream: Stream.periodic(const Duration(seconds: 1)),
+                    builder: (context, snapshot) {
+                      return Text(
+                        _formatClockTime(DateTime.now()),
+                        style: const TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
+                  
+                  const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          icon: Icon(state is TimerRunInProgress ? Icons.pause : Icons.play_arrow),
-                          iconSize: 60,
-                          color: Colors.white,
-                          onPressed: () {
-                            if (state is TimerRunInProgress) {
-                              context.read<TimerBloc>().add(const TimerPaused());
-                            } else {
-                              context.read<TimerBloc>().add(const TimerResumed());
-                            }
-                          },
-                        ),
+                        if (state is! TimerRunComplete)
+                          IconButton(
+                            icon: Icon(state is TimerRunInProgress ? Icons.pause : Icons.play_arrow),
+                            iconSize: 80,
+                            color: Colors.white,
+                            onPressed: () {
+                              if (state is TimerRunInProgress) {
+                                context.read<TimerBloc>().add(const TimerPaused());
+                              } else {
+                                context.read<TimerBloc>().add(const TimerResumed());
+                              }
+                            },
+                          ),
                         const SizedBox(width: 40),
                         IconButton(
                           icon: const Icon(Icons.refresh),
-                          iconSize: 60,
+                          iconSize: 80,
                           color: Colors.white,
                           onPressed: () => context.read<TimerBloc>().add(TimerStarted(duration: minutes * 60)),
                         ),
                       ],
                     ),
-                  ],
-                );
-              }
-              if (state is TimerRunComplete) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Workout Complete!',
-                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 20),
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      iconSize: 60,
-                      color: Colors.white,
-                      onPressed: () => context.read<TimerBloc>().add(TimerStarted(duration: minutes * 60)),
-                    ),
-                  ],
-                );
-              }
-              return const CircularProgressIndicator(color: Colors.white);
-            },
-          ),
-        ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
