@@ -115,12 +115,30 @@ class TabataTimerScreen extends StatelessWidget {
 class TabataTimerView extends StatelessWidget {
   const TabataTimerView({super.key});
 
-  Color _getBackgroundColor(String currentState) {
-    if (currentState == "Work") return Colors.green;
-    if (currentState == "Rest") return Colors.orange;
-    if (currentState == "Get Ready") return const Color(0xFF40324B);
-    if (currentState == "Done!") return Colors.blue;
-    return const Color(0xFF40324B);
+  String _formatClockTime(DateTime now) {
+    int hour = now.hour;
+    final String amPm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+    final String m = now.minute.toString().padLeft(2, '0');
+    final String s = now.second.toString().padLeft(2, '0');
+    return '$hour:$m:$s $amPm';
+  }
+
+  Color _getBackgroundColor(TabataTimerState state) {
+    if (state is TabataTimerPause) return const Color(0xFFEBEB3B);
+    switch (state.currentState) {
+      case "Work":
+        return const Color(0xFF90EE90);
+      case "Rest":
+        return Colors.orange;
+      case "Get Ready":
+        return const Color(0xFFF44336);
+      case "Done!":
+        return const Color(0xFF2196F3);
+      default:
+        return const Color(0xFF40324B);
+    }
   }
 
   @override
@@ -139,17 +157,15 @@ class TabataTimerView extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              // Signal idle to Chromecast before popping
-              CastService.instance.updateIdle();
+              CastService.instance.stopWorkout();
               Navigator.of(context).pop();
             },
           ),
         ),
         body: BlocBuilder<TabataTimerBloc, TabataTimerState>(
           builder: (context, state) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              color: _getBackgroundColor(state.currentState),
+            return Container(
+              color: _getBackgroundColor(state),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -176,29 +192,33 @@ class TabataTimerView extends StatelessWidget {
                           color: Colors.white,
                           fontWeight: FontWeight.bold),
                     ),
+                    
+                    const Spacer(),
+                    
                     StreamBuilder(
                       stream: Stream.periodic(const Duration(seconds: 1)),
                       builder: (context, snapshot) {
-                        final now = DateTime.now();
                         return Text(
-                          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}',
+                          _formatClockTime(DateTime.now()),
                           style: const TextStyle(
-                              fontSize: 37.5,
-                              color: Colors.white70,
+                              fontSize: 30,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold),
                         );
                       },
                     ),
-                    const Spacer(),
+                    
+                    const SizedBox(height: 20),
+                    
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
+                      padding: const EdgeInsets.only(bottom: 30.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (state is! TabataTimerComplete && state.currentState != "Done!")
                             IconButton(
                               icon: Icon(state is TabataTimerInProgress ? Icons.pause : Icons.play_arrow),
-                              iconSize: 60,
+                              iconSize: 80,
                               color: Colors.white,
                               onPressed: () {
                                 if (state is TabataTimerInProgress) {
@@ -212,7 +232,7 @@ class TabataTimerView extends StatelessWidget {
                           if (state.currentState != "Done!")
                           IconButton(
                             icon: const Icon(Icons.refresh),
-                            iconSize: 60,
+                            iconSize: 80,
                             color: Colors.white,
                             onPressed: () => context.read<TabataTimerBloc>().add(const TabataTimerReset()),
                           ),

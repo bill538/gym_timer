@@ -46,16 +46,27 @@ class CircuitTimerScreen extends StatelessWidget {
 class CircuitTimerView extends StatelessWidget {
   const CircuitTimerView({super.key});
 
-  Color _getBackgroundColor(String currentState) {
-    switch (currentState) {
+  String _formatClockTime(DateTime now) {
+    int hour = now.hour;
+    final String amPm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+    final String m = now.minute.toString().padLeft(2, '0');
+    final String s = now.second.toString().padLeft(2, '0');
+    return '$hour:$m:$s $amPm';
+  }
+
+  Color _getBackgroundColor(CircuitTimerState state) {
+    if (state is CircuitTimerPause) return const Color(0xFFEBEB3B);
+    switch (state.currentState) {
       case "Work":
-        return Colors.green;
+        return const Color(0xFF90EE90);
       case "Rest":
         return Colors.orange;
       case "Round Rest":
         return Colors.red;
       case "Get Ready":
-        return const Color(0xFF40324B);
+        return const Color(0xFFF44336);
       default:
         return const Color(0xFF40324B);
     }
@@ -72,17 +83,15 @@ class CircuitTimerView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Signal idle to Chromecast before popping
-            CastService.instance.updateIdle();
+            CastService.instance.stopWorkout();
             Navigator.of(context).pop();
           },
         ),
       ),
       body: BlocBuilder<CircuitTimerBloc, CircuitTimerState>(
         builder: (context, state) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            color: _getBackgroundColor(state.currentState),
+          return Container(
+            color: _getBackgroundColor(state),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -104,49 +113,50 @@ class CircuitTimerView extends StatelessWidget {
                     '${state.duration}',
                     style: const TextStyle(fontSize: 120, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
+                  
+                  const Spacer(),
+                  
                   StreamBuilder(
                     stream: Stream.periodic(const Duration(seconds: 1)),
                     builder: (context, snapshot) {
-                      final now = DateTime.now();
                       return Text(
-                        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}',
-                        style: const TextStyle(fontSize: 30, color: Colors.white70, fontWeight: FontWeight.bold),
+                        _formatClockTime(DateTime.now()),
+                        style: const TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
                       );
                     },
                   ),
-                  const SizedBox(height: 30),
-                  if (state is! CircuitTimerComplete)
-                    Row(
+                  
+                  const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          icon: Icon(state is CircuitTimerInProgress ? Icons.pause : Icons.play_arrow),
-                          iconSize: 60,
-                          color: Colors.white,
-                          onPressed: () {
-                            if (state is CircuitTimerInProgress) {
-                              context.read<CircuitTimerBloc>().add(const CircuitTimerPause());
-                            } else {
-                              context.read<CircuitTimerBloc>().add(const CircuitTimerResumed());
-                            }
-                          },
-                        ),
-                        const SizedBox(width: 40),
+                        if (state is! CircuitTimerComplete) ...[
+                          IconButton(
+                            icon: Icon(state is CircuitTimerInProgress ? Icons.pause : Icons.play_arrow),
+                            iconSize: 80,
+                            color: Colors.white,
+                            onPressed: () {
+                              if (state is CircuitTimerInProgress) {
+                                context.read<CircuitTimerBloc>().add(const CircuitTimerPause());
+                              } else {
+                                context.read<CircuitTimerBloc>().add(const CircuitTimerResumed());
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 40),
+                        ],
                         IconButton(
                           icon: const Icon(Icons.refresh),
-                          iconSize: 60,
+                          iconSize: 80,
                           color: Colors.white,
                           onPressed: () => context.read<CircuitTimerBloc>().add(const CircuitTimerReset()),
                         ),
                       ],
-                    )
-                  else
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      iconSize: 60,
-                      color: Colors.white,
-                      onPressed: () => context.read<CircuitTimerBloc>().add(const CircuitTimerReset()),
                     ),
+                  ),
                 ],
               ),
             ),
