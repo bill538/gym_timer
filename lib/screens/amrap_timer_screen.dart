@@ -40,7 +40,7 @@ class AmrapTimerView extends StatelessWidget {
   }
 
   Color _getBackgroundColor(TimerState state) {
-    if (state is TimerRunPause) return const Color(0xFFEBEB3B);
+    if (state is TimerRunPause) return const Color(0xFFFFEB3B);
     if (state is TimerCountdown) return const Color(0xFFF44336);
     if (state is TimerRunComplete) return const Color(0xFF2196F3);
     return const Color(0xFF90EE90);
@@ -82,9 +82,9 @@ class AmrapTimerView extends StatelessWidget {
                       style: const TextStyle(fontSize: 150, color: Colors.white, fontWeight: FontWeight.bold),
                     )
                   else if (state is TimerRunInProgress || state is TimerRunPause) ...[
-                    const Text(
-                      'Time Remaining',
-                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+                    Text(
+                      state is TimerRunPause ? 'PAUSED' : 'Time Remaining',
+                      style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
                     Text(

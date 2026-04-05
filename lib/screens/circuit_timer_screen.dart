@@ -56,7 +56,7 @@ class CircuitTimerView extends StatelessWidget {
   }
 
   Color _getBackgroundColor(CircuitTimerState state) {
-    if (state is CircuitTimerPause) return const Color(0xFFEBEB3B);
+    if (state is CircuitTimerPaused) return const Color(0xFFFFEB3B);
     switch (state.currentState) {
       case "Work":
         return const Color(0xFF90EE90);
@@ -104,7 +104,7 @@ class CircuitTimerView extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    state.currentState,
+                    state is CircuitTimerPaused ? 'PAUSED' : state.currentState,
                     style: const TextStyle(fontSize: 50, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   Text(

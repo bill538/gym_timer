@@ -35,11 +35,9 @@ class EmomTimerView extends StatelessWidget {
   const EmomTimerView({super.key, required this.minutes});
 
   Color _getBackgroundColor(TimerState state) {
-    if (state is TimerRunPause) return const Color(0xFFEBEB3B);
+    if (state is TimerRunPause) return const Color(0xFFFFEB3B); // Full Yellow
     if (state is TimerCountdown) return const Color(0xFFF44336);
     if (state is TimerRunComplete) return const Color(0xFF2196F3);
-    // In standard TimerBloc, EMOM uses "Go!" status which we map to green.
-    // Standard Rest colors are handled in Tabata/Circuit.
     return const Color(0xFF90EE90);
   }
 
@@ -85,7 +83,7 @@ class EmomTimerView extends StatelessWidget {
                     )
                   else if (state is TimerRunInProgress || state is TimerRunPause) ...[
                     Text(
-                      'Minute ${(minutes * 60 - state.duration) ~/ 60 + 1} / $minutes',
+                      state is TimerRunPause ? 'PAUSED' : 'Minute ${(minutes * 60 - state.duration) ~/ 60 + 1} / $minutes',
                       style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
