@@ -130,9 +130,9 @@ class TabataTimerView extends StatelessWidget {
       case "Work":
         return const Color(0xFF90EE90);
       case "Rest":
-        return Colors.orange;
+        return const Color(0xFFF44336); // Red from Cast
       case "Get Ready":
-        return const Color(0xFFF44336);
+        return const Color(0xFFF44336); // Red from Cast
       case "Done!":
         return const Color(0xFF2196F3);
       default:

@@ -61,9 +61,8 @@ class CircuitTimerView extends StatelessWidget {
       case "Work":
         return const Color(0xFF90EE90);
       case "Rest":
-        return Colors.orange;
       case "Round Rest":
-        return Colors.red;
+        return const Color(0xFFF44336); // Matching Red from Cast for any rest/prep
       case "Get Ready":
         return const Color(0xFFF44336);
       default:

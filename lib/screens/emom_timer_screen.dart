@@ -34,11 +34,13 @@ class EmomTimerView extends StatelessWidget {
 
   const EmomTimerView({super.key, required this.minutes});
 
-  Color _getBackgroundColor(String stateText, bool isPaused) {
-    if (isPaused) return const Color(0xFFEBEB3B); // Matching yellow (approx)
-    if (stateText == "Get Ready") return const Color(0xFFF44336);
-    if (stateText == "Finished") return const Color(0xFF2196F3);
-    return const Color(0xFF90EE90); // Light Green matching Cast
+  Color _getBackgroundColor(TimerState state) {
+    if (state is TimerRunPause) return const Color(0xFFEBEB3B);
+    if (state is TimerCountdown) return const Color(0xFFF44336);
+    if (state is TimerRunComplete) return const Color(0xFF2196F3);
+    // In standard TimerBloc, EMOM uses "Go!" status which we map to green.
+    // Standard Rest colors are handled in Tabata/Circuit.
+    return const Color(0xFF90EE90);
   }
 
   String _formatClockTime(DateTime now) {
@@ -71,7 +73,7 @@ class EmomTimerView extends StatelessWidget {
           if (state is TimerRunComplete) status = "Finished";
 
           return Container(
-            color: _getBackgroundColor(status, isPaused),
+            color: _getBackgroundColor(state),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
