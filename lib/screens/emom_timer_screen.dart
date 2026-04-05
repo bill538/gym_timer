@@ -43,12 +43,11 @@ class EmomTimerView extends StatelessWidget {
 
   String _formatClockTime(DateTime now) {
     int hour = now.hour;
-    final String amPm = hour >= 12 ? 'PM' : 'AM';
     hour = hour % 12;
     if (hour == 0) hour = 12;
     final String m = now.minute.toString().padLeft(2, '0');
     final String s = now.second.toString().padLeft(2, '0');
-    return '$hour:$m:$s $amPm';
+    return '$hour:$m:$s';
   }
 
   @override
