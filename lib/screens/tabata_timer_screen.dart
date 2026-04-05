@@ -125,7 +125,7 @@ class TabataTimerView extends StatelessWidget {
   }
 
   Color _getBackgroundColor(TabataTimerState state) {
-    if (state is TabataTimerPause) return const Color(0xFFEBEB3B);
+    if (state is TabataTimerPause) return const Color(0xFFFFEB3B);
     switch (state.currentState) {
       case "Work":
         return const Color(0xFF90EE90);

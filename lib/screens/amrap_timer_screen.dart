@@ -40,7 +40,7 @@ class AmrapTimerView extends StatelessWidget {
   }
 
   Color _getBackgroundColor(TimerState state) {
-    if (state is TimerRunPause) return const Color(0xFFEBEB3B);
+    if (state is TimerRunPause) return const Color(0xFFFFEB3B);
     if (state is TimerCountdown) return const Color(0xFFF44336);
     if (state is TimerRunComplete) return const Color(0xFF2196F3);
     return const Color(0xFF90EE90);
