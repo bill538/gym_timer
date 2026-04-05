@@ -178,7 +178,7 @@ class TabataTimerView extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      state.currentState,
+                      state is TabataTimerPause ? 'PAUSED' : state.currentState,
                       style: const TextStyle(
                           fontSize: 60,
                           color: Colors.white,

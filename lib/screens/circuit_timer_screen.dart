@@ -104,7 +104,7 @@ class CircuitTimerView extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    state.currentState,
+                    state is CircuitTimerPause ? 'PAUSED' : state.currentState,
                     style: const TextStyle(fontSize: 50, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   Text(

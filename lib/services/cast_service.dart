@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
@@ -13,6 +14,24 @@ class CastService {
 
   static void initialize() {
     // No longer auto-sending updateIdle here as it overrides workout starts
+    _startHeartbeat();
+  }
+
+  static void _startHeartbeat() {
+    Timer.periodic(const Duration(seconds: 30), (timer) async {
+      final isConnected = GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected;
+      if (isConnected) {
+        // Sending a minimal message to keep the session active
+        try {
+          await _channel.invokeMethod('sendCastMessage', {
+            'namespace': _namespace,
+            'message': jsonEncode({'type': 'heartbeat'}),
+          });
+        } catch (e) {
+          // Ignore
+        }
+      }
+    });
   }
 
   Future<void> updateIdle({String? time}) async {
