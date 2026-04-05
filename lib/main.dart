@@ -23,6 +23,7 @@ class GymTimerApp extends StatelessWidget {
         primaryColor: const Color(0xFF40324B),
         fontFamily: 'monospace',
       ),
+      debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
   }
