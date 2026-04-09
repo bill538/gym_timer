@@ -56,6 +56,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     emit(TimerRunInProgress(event.duration));
     _updateCast(event.duration, "Go!");
 
+    // Start the ticker ONLY AFTER the start sound is completely done
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
         .tick(ticks: event.duration)
