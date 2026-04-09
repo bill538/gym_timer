@@ -42,7 +42,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     // Sync setup clock to Chromecast immediately on start to transition
     _updateCast(0, "Get Ready");
     
-    // 5-second countdown
+    // 5-second countdown with beeps
     for (int i = 5; i > 0; i--) {
       emit(TimerCountdown(i));
       _updateCast(i, "Get Ready");
@@ -56,7 +56,6 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     emit(TimerRunInProgress(event.duration));
     _updateCast(event.duration, "Go!");
 
-    // Start the ticker ONLY AFTER the start sound is completely done
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
         .tick(ticks: event.duration)
@@ -86,13 +85,10 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   void _onTicked(_TimerTicked event, Emitter<TimerState> emit) async {
     if (event.duration > 0) {
-      if (event.duration <= 3) {
-        _playSound('beep.mp3');
-      }
       emit(TimerRunInProgress(event.duration));
       _updateCast(event.duration, "Go!");
     } else {
-      _playSound('start.mp3');
+      _playSound('end.mp3');
       emit(const TimerRunComplete());
       _updateCast(0, "Finished");
       await Future.delayed(const Duration(seconds: 30));
@@ -135,17 +131,16 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   Future<void> _playSound(String sound) async {
     try {
-      final player = AudioPlayer();
+      final player = AudioPlayer(); // Create a new instance for each play
       final completer = Completer<void>();
       player.onPlayerComplete.listen((_) {
-        player.dispose();
+        player.dispose(); // Dispose after completion
         completer.complete();
       });
       await player.play(AssetSource('sounds/$sound'));
       return completer.future;
     } catch (e) {
-      // In case of an error, complete immediately to avoid hanging
-      return Future.value();
+      return Future.value(); // Complete immediately on error
     }
   }
 }
