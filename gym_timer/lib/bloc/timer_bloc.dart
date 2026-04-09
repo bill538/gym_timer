@@ -47,7 +47,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       emit(TimerCountdown(i));
       _updateCast(i, "Get Ready");
       if (i <= 3) {
-        _playSound('beep.mp3');
+        await _playSound('beep.mp3');
       }
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -55,6 +55,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     await _playSound('start.mp3'); // Wait for start sound to finish
     emit(TimerRunInProgress(event.duration));
     _updateCast(event.duration, "Go!");
+
+    // Start the ticker ONLY AFTER the start sound is completely done
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
         .tick(ticks: event.duration)
