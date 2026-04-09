@@ -40,20 +40,20 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0, // No shadow for a flat look
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white, size: 30),
-              onPressed: () { Scaffold.of(context).openDrawer(); },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.cast, color: Colors.white, size: 30),
             onPressed: () { /* Chromecast functionality */ },
             tooltip: 'Cast to device',
+          ),
+          Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 30),
+                onPressed: () { Scaffold.of(context).openDrawer(); },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
           ),
         ],
       ),
