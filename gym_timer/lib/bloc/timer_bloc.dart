@@ -39,12 +39,11 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   void _onStarted(TimerStarted event, Emitter<TimerState> emit) async {
-    // Sync setup clock to Chromecast immediately on start to transition
+    _tickerSubscription?.cancel(); // Ensure any previous ticker is stopped
     _updateCast(0, "Get Ready");
     
-    // 5-second countdown
     for (int i = 5; i > 0; i--) {
-      emit(TimerCountdown(i));
+      emit(TimerGetReady(i));
       _updateCast(i, "Get Ready");
       if (i <= 3) {
         await _playSound('beep.mp3');
@@ -52,17 +51,18 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       await Future.delayed(const Duration(seconds: 1));
     }
     
-    await _playSound('start.mp3'); // Wait for start sound to finish
+    await _playSound('start.mp3');
+    
     emit(TimerRunInProgress(event.duration));
     _updateCast(event.duration, "Go!");
-    _tickerSubscription?.cancel();
+
     _tickerSubscription = _ticker
         .tick(ticks: event.duration)
         .listen((duration) => add(_TimerTicked(duration: duration)));
   }
 
   void _onPaused(TimerPaused event, Emitter<TimerState> emit) {
-    if (state is TimerRunInProgress || state is TimerCountdown) {
+    if (state is TimerRunInProgress || state is TimerGetReady) {
       _tickerSubscription?.pause();
       emit(TimerRunPause(state.duration));
       _updateCast(state.duration, "Paused", isPaused: true);
@@ -130,10 +130,16 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   Future<void> _playSound(String sound) async {
     try {
-      await _audioPlayer.stop();
-      await _audioPlayer.play(AssetSource('sounds/$sound'));
+      final player = AudioPlayer(); // Create a new instance for each play
+      final completer = Completer<void>();
+      player.onPlayerComplete.listen((_) {
+        player.dispose(); // Dispose after completion
+        completer.complete();
+      });
+      await player.play(AssetSource('sounds/$sound'));
+      return completer.future;
     } catch (e) {
-      // Ignore
+      return Future.value(); // Complete immediately on error
     }
   }
 }
