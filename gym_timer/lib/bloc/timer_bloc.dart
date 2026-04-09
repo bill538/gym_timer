@@ -6,6 +6,8 @@ import 'package:gym_timer/ticker/ticker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:gym_timer/services/cast_service.dart';
 
+import 'package:gym_timer/settings.dart';
+
 part 'timer_event.dart';
 part 'timer_state.dart';
 
@@ -42,8 +44,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     // Sync setup clock to Chromecast immediately on start to transition
     _updateCast(0, "Get Ready");
     
-    // 5-second countdown
-    for (int i = 5; i > 0; i--) {
+    // Get Ready countdown
+    for (int i = AppSettings.getReadyDuration; i > 0; i--) {
       emit(TimerCountdown(i));
       _updateCast(i, "Get Ready");
       if (i <= 3) {
