@@ -134,12 +134,16 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   Future<void> _playSound(String sound) async {
     try {
       final player = AudioPlayer();
-      await player.play(AssetSource('sounds/$sound'));
+      final completer = Completer<void>();
       player.onPlayerComplete.listen((_) {
         player.dispose();
+        completer.complete();
       });
+      await player.play(AssetSource('sounds/$sound'));
+      return completer.future;
     } catch (e) {
-      // Ignore
+      // In case of an error, complete immediately to avoid hanging
+      return Future.value();
     }
   }
 }
