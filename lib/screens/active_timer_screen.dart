@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_timer/screens/settings_screen.dart'; // Import the settings screen
 import 'package:gym_timer/widgets/painters/timer_painter.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -31,7 +32,6 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // This would be driven by the timer state
     final Color backgroundColor = Colors.green; // "Work" state
     final String stateText = "WORK";
 
@@ -40,30 +40,55 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top section for Round Counter
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+            AppBar(
+              backgroundColor: backgroundColor,
+              elevation: 0,
+              automaticallyImplyLeading: false, // No default back button
+              title: const Text(
+                '21BOOM',
+                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.cast, color: Colors.white, size: 30),
+                  onPressed: () { /* Chromecast functionality */ },
+                  tooltip: 'Cast to device',
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  Text(
-                    'ROUND 3/8',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  TextButton(
+                    onPressed: () {
+                      print('Settings button pressed!');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     ),
+                    child: Text(
+                      'Settings',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  SizedBox(height: 10), // Small spacing
+                  Text(
+                    'Test content below button.',
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18),
                   ),
                 ],
               ),
             ),
-            // Main Timer
+            // Original content area (simplified for now)
             Expanded(
               child: Center(
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // The Progress Ring
                     SizedBox(
                       width: 300,
                       height: 300,
@@ -71,13 +96,12 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
                         painter: TimerPainter(progress: _currentProgress),
                       ),
                     ),
-                    // The Big Number
                     FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
                         "",
                         style: const TextStyle(
-                          fontSize: 500, // This will be scaled down by FittedBox
+                          fontSize: 500,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                           fontFamily: 'monospace',
@@ -86,32 +110,6 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
                     ),
                   ],
                 ),
-              ),
-            ),
-            // Bottom "Up Next" panel
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-              margin: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2), // Glassmorphism effect
-                borderRadius: BorderRadius.circular(12.0),
-                border: Border.all(color: Colors.white.withOpacity(0.3)),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'UP NEXT:',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  Text(
-                    'Kettlebell Swings',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                ],
               ),
             ),
           ],

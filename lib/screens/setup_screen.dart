@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_timer/services/cast_service.dart';
+import 'package:gym_timer/screens/settings_screen.dart'; // Import the settings screen
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -257,6 +258,22 @@ class _SetupScreenState extends State<SetupScreen> {
                     ),
                   ),
                 ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 30),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  );
+                },
+                tooltip: 'Settings',
               ),
             ),
           ),
