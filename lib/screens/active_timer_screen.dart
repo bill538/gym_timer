@@ -39,35 +39,76 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
       backgroundColor: backgroundColor,
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'This is a test button.',
-              style: TextStyle(color: Colors.white, fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                print('Test button pressed!');
-                // You could navigate to settings from here for debugging
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+            AppBar(
+              backgroundColor: backgroundColor,
+              elevation: 0,
+              automaticallyImplyLeading: false, // No default back button
+              title: const Text(
+                '21BOOM',
+                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              child: Text(
-                'Press Me!',
-                style: TextStyle(fontSize: 20),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.cast, color: Colors.white, size: 30),
+                  onPressed: () { /* Chromecast functionality */ },
+                  tooltip: 'Cast to device',
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      print('Settings button pressed!');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    ),
+                    child: Text(
+                      'Settings',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  SizedBox(height: 10), // Small spacing
+                  Text(
+                    'Test content below button.',
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18),
+                  ),
+                ],
               ),
             ),
-            // Placeholder for other content, ensuring layout space
+            // Original content area (simplified for now)
             Expanded(
               child: Center(
-                child: Text(
-                  'Content Area',
-                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: CustomPaint(
+                        painter: TimerPainter(progress: _currentProgress),
+                      ),
+                    ),
+                    FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        "",
+                        style: const TextStyle(
+                          fontSize: 500,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -6,6 +6,8 @@ import 'package:gym_timer/ticker/ticker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:gym_timer/services/cast_service.dart';
 
+import 'package:gym_timer/settings.dart';
+
 part 'timer_event.dart';
 part 'timer_state.dart';
 
@@ -42,21 +44,22 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     // Sync setup clock to Chromecast immediately on start to transition
     _updateCast(0, "Get Ready");
     
-    // 3-second countdown
-    _playSound('beep.mp3');
-    for (int i = 3; i > 0; i--) {
+    // Get Ready countdown
+    for (int i = AppSettings.getReadyDuration; i > 0; i--) {
       emit(TimerCountdown(i));
       _updateCast(i, "Get Ready");
-      if (i > 1) {
-        await Future.delayed(const Duration(seconds: 1));
-        _playSound('beep.mp3');
-      } else {
-        await Future.delayed(const Duration(seconds: 1));
+      if (i <= 3) {
+        await _playSound('beep.mp3');
       }
+      await Future.delayed(const Duration(seconds: 1));
     }
     
-    _playSound('start.mp3'); // Fire and forget
-    emit(TimerRunInProgress(event.duration));
+    await _playSound('start.mp3'); // Wait for start sound to finish
+    if (workoutType == "EMOM") {
+      emit(TimerRunInProgress(0)); // Start EMOM at 0
+    } else {
+      emit(TimerRunInProgress(event.duration));
+    }
     _updateCast(event.duration, "Go!");
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
