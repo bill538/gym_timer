@@ -42,21 +42,25 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   void _onStarted(TimerStarted event, Emitter<TimerState> emit) async {
     // Sync setup clock to Chromecast immediately on start to transition
-    _updateCast(0, "Get Ready");
+    _updateCast(0, "Get Ready", sound: 'beep.mp3');
     
     // Get Ready countdown
     for (int i = AppSettings.getReadyDuration; i > 0; i--) {
       emit(TimerCountdown(i));
-      _updateCast(i, "Get Ready");
+      if (i < AppSettings.getReadyDuration) {
+        _updateCast(i, "Get Ready", sound: (i <= 3) ? 'beep.mp3' : null);
+      } else {
+        _updateCast(i, "Get Ready");
+      }
       if (i <= 3) {
         await _playSound('beep.mp3');
       }
       await Future.delayed(const Duration(seconds: 1));
     }
     
-    await _playSound('start.mp3'); // Wait for start sound to finish
+    _playSound('start.mp3'); // Wait for start sound to finish
     emit(TimerRunInProgress(event.duration));
-    _updateCast(event.duration, "Go!");
+    _updateCast(event.duration, "Go!", sound: 'start.mp3');
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
         .tick(ticks: event.duration)
@@ -87,22 +91,23 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   void _onTicked(_TimerTicked event, Emitter<TimerState> emit) async {
     if (event.duration > 0) {
       emit(TimerRunInProgress(event.duration));
-      _updateCast(event.duration, "Go!");
-
-      // Play beep.mp3 at the end of every minute for EMOM
+      
+      String? sound;
       if (workoutType == "EMOM" && event.duration % 60 == 0) {
+        sound = 'beep.mp3';
         _playSound('beep.mp3');
       }
+      _updateCast(event.duration, "Go!", sound: sound);
     } else {
       _playSound('end.mp3');
       emit(const TimerRunComplete());
-      _updateCast(0, "Finished");
+      _updateCast(0, "Finished", sound: 'end.mp3');
       await Future.delayed(const Duration(seconds: 30));
       emit(const TimerRunFinished());
     }
   }
 
-  void _updateCast(int duration, String status, {bool isPaused = false}) {
+  void _updateCast(int duration, String status, {bool isPaused = false, String? sound}) {
     String color;
     if (isPaused) {
       color = "#FFEB3B";
@@ -132,6 +137,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       round: currentRound,
       totalRounds: total,
       backgroundColor: color,
+      sound: sound,
     );
   }
 
