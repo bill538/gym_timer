@@ -197,109 +197,116 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.0,
-              mainAxisSpacing: 12.0,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                WorkoutCard(
-                  title: 'TABATA',
-                  subtitle: '20s Work / 10s Rest',
-                  icon: Icons.flash_on,
-                  glowColor: Colors.blue.shade400,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const TabataSetupScreen()),
-                    );
-                  },
-                ),
-                WorkoutCard(
-                  title: 'EMOM',
-                  subtitle: 'Every Minute on the Minute',
-                  icon: Icons.fitness_center,
-                  glowColor: Colors.yellow.shade400,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const EmomSetupScreen()),
-                    );
-                  },
-                ),
-                WorkoutCard(
-                  title: 'AMRAP',
-                  subtitle: 'As Many Reps As Possible',
-                  icon: Icons.timer,
-                  glowColor: Colors.green.shade400,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AmrapSetupScreen()),
-                    );
-                  },
-                ),
-                WorkoutCard(
-                  title: 'CIRCUIT',
-                  subtitle: 'Variable Intervals',
-                  icon: Icons.sync,
-                  glowColor: Colors.orange.shade400,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CircuitSetupScreen()),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A1A),
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.15),
-                        width: 2,
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          return Column(
+            children: [
+              Expanded(
+                flex: orientation == Orientation.portrait ? 2 : 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: GridView.count(
+                    crossAxisCount: orientation == Orientation.portrait ? 2 : 4,
+                    crossAxisSpacing: 12.0,
+                    mainAxisSpacing: 12.0,
+                    shrinkWrap: true,
+                    physics: orientation == Orientation.portrait 
+                        ? const NeverScrollableScrollPhysics() 
+                        : const ScrollPhysics(),
+                    children: [
+                      WorkoutCard(
+                        title: 'TABATA',
+                        subtitle: '20s Work / 10s Rest',
+                        icon: Icons.flash_on,
+                        glowColor: Colors.blue.shade400,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const TabataSetupScreen()),
+                          );
+                        },
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.8),
-                          blurRadius: 10,
-                          offset: const Offset(4, 4),
+                      WorkoutCard(
+                        title: 'EMOM',
+                        subtitle: 'Every Minute on the Minute',
+                        icon: Icons.fitness_center,
+                        glowColor: Colors.yellow.shade400,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EmomSetupScreen()),
+                          );
+                        },
+                      ),
+                      WorkoutCard(
+                        title: 'AMRAP',
+                        subtitle: 'As Many Reps As Possible',
+                        icon: Icons.timer,
+                        glowColor: Colors.green.shade400,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AmrapSetupScreen()),
+                          );
+                        },
+                      ),
+                      WorkoutCard(
+                        title: 'CIRCUIT',
+                        subtitle: 'Variable Intervals',
+                        icon: Icons.sync,
+                        glowColor: Colors.orange.shade400,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CircuitSetupScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: orientation == Orientation.portrait ? 1 : 2,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+                    child: SizedBox(
+                      width: orientation == Orientation.portrait 
+                          ? MediaQuery.of(context).size.width * 0.7 
+                          : MediaQuery.of(context).size.width * 0.4,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1A1A),
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.15),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.8),
+                              blurRadius: 10,
+                              offset: const Offset(4, 4),
+                            ),
+                          ],
                         ),
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.05),
-                          blurRadius: 1,
-                          offset: const Offset(-1, -1),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Text(
-                          _timeString,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            fontFamily: 'monospace',
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(
+                              _timeString,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -307,10 +314,9 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                   ),
                 ),
               ),
-            ),
-          ),
-
-        ],
+            ],
+          );
+        }
       ),
     );
   }
