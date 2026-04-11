@@ -11,6 +11,7 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_timer/services/cast_service.dart';
 import 'package:gym_timer/screens/settings_screen.dart'; // Import the settings screen
+import 'package:gym_timer/screens/general_timer_screen.dart';
 import 'package:gym_timer/settings.dart';
 import 'package:gym_timer/main.dart';
 
@@ -263,6 +264,19 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const CircuitSetupScreen()),
+                          );
+                        },
+                      ),
+                      WorkoutCard(
+                        title: 'GENERAL',
+                        subtitle: 'Simple Timer',
+                        icon: Icons.hourglass_empty,
+                        glowColor: Colors.purple.shade400,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const GeneralTimerSetupScreen()),
                           );
                         },
                       ),
