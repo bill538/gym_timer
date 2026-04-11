@@ -71,11 +71,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _launchURL,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _launchURL,
+        child: Center(
           child: Image.asset('assets/images/thankyou.png'),
         ),
       ),
