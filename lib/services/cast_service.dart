@@ -75,8 +75,7 @@ class CastService {
           uniqueID: AppSettings.lastCastDeviceId,
         );
 
-        // Instead of starting a new session with a dummy object, 
-        // trigger discovery to find the real device reference
+        // First try to see if it's already in the discovery list
         GoogleCastDiscoveryManager.instance.startDiscovery();
         
         // Wait up to 5 seconds for the real device to appear in the stream
@@ -90,11 +89,36 @@ class CastService {
           foundDevice = devices.firstWhere((d) => d.deviceID == AppSettings.lastCastDeviceId);
           debugPrint("Cast auto-connect: Real device found in discovery.");
         } catch (_) {
-          debugPrint("Cast auto-connect: Device not found in discovery, using manual fallback.");
-          foundDevice = targetDevice;
+          debugPrint("Cast auto-connect: Device not found in discovery, creating manual reference.");
+          if (Platform.isAndroid) {
+            foundDevice = GoogleCastAndroidDevice(
+              deviceID: AppSettings.lastCastDeviceId,
+              friendlyName: AppSettings.lastCastDeviceName,
+              modelName: AppSettings.lastCastDeviceName,
+              statusText: '',
+              deviceVersion: '',
+              isOnLocalNetwork: true,
+              category: '',
+              uniqueID: AppSettings.lastCastDeviceId,
+            );
+          } else {
+            foundDevice = GoogleCastDevice(
+              deviceID: AppSettings.lastCastDeviceId,
+              friendlyName: AppSettings.lastCastDeviceName,
+              modelName: AppSettings.lastCastDeviceName,
+              statusText: '',
+              deviceVersion: '',
+              isOnLocalNetwork: true,
+              category: '',
+              uniqueID: AppSettings.lastCastDeviceId,
+            );
+          }
         }
 
-        await sessionManager.startSessionWithDevice(foundDevice);
+        // Add a small delay to ensure the discovery manager has settled before starting session
+        await Future.delayed(const Duration(seconds: 2));
+
+        await sessionManager.startSessionWithDevice(foundDevice!);
         debugPrint("Cast auto-connect: Session start request sent.");
         
         // Stop discovery after attempt
