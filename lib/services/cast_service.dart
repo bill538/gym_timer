@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gym_timer/settings.dart';
 
 class CastService {
   static final CastService instance = CastService._internal();
@@ -13,8 +15,56 @@ class CastService {
   bool isWorkoutActive = false;
 
   static void initialize() {
-    // No longer auto-sending updateIdle here as it overrides workout starts
     _startHeartbeat();
+    
+    // Listen for connection state changes to save last connected device
+    GoogleCastSessionManager.instance.currentSessionStream.listen((session) async {
+      if (session != null && session.connectionState == GoogleCastConnectState.connected) {
+        final device = session.device;
+        if (device != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('lastCastDeviceName', device.friendlyName);
+          await prefs.setString('lastCastDeviceId', device.deviceID);
+          AppSettings.lastCastDeviceName = device.friendlyName;
+          AppSettings.lastCastDeviceId = device.deviceID;
+        }
+      }
+    });
+  }
+
+  static Future<void> checkAndAutoConnect() async {
+    final sessionManager = GoogleCastSessionManager.instance;
+    
+    // Check if already connected or connecting
+    if (sessionManager.connectionState == GoogleCastConnectState.connected ||
+        sessionManager.connectionState == GoogleCastConnectState.connecting) {
+      return;
+    }
+
+    // Check settings
+    if (AppSettings.autoConnectChromecast && 
+        AppSettings.lastCastDeviceId.isNotEmpty) {
+      
+      print("Attempting auto-connect to: ${AppSettings.lastCastDeviceName} (${AppSettings.lastCastDeviceId})");
+      
+      try {
+        // Construct dummy device for connection attempt
+        final lastDevice = GoogleCastDevice(
+          deviceID: AppSettings.lastCastDeviceId,
+          friendlyName: AppSettings.lastCastDeviceName,
+          modelName: AppSettings.lastCastDeviceName,
+          statusText: '',
+          deviceVersion: '',
+          isOnLocalNetwork: true,
+          category: '',
+          uniqueID: AppSettings.lastCastDeviceId,
+        );
+
+        await sessionManager.startSessionWithDevice(lastDevice);
+      } catch (e) {
+        print("Failed to auto-connect: $e");
+      }
+    }
   }
 
   static void _startHeartbeat() {

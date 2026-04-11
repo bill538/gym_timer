@@ -11,6 +11,7 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_timer/services/cast_service.dart';
 import 'package:gym_timer/screens/settings_screen.dart'; // Import the settings screen
+import 'package:gym_timer/settings.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -29,6 +30,13 @@ class _SetupScreenState extends State<SetupScreen> {
     super.initState();
     _timeString = _formatDateTime(DateTime.now());
     _idleTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+
+    // Attempt auto-connection to Chromecast on startup
+    CastService.checkAndAutoConnect();
+  }
+
+  void _autoConnectChromecast() async {
+    // This is now handled by CastService.checkAndAutoConnect()
   }
 
   @override
