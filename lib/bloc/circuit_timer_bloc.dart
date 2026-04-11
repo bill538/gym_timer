@@ -49,13 +49,17 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   void _onStarted(CircuitTimerStarted event, Emitter<CircuitTimerState> emit) async {
     final int getReadyTime = AppSettings.getReadyDuration;
 
-    _updateCast(getReadyTime, 1, 1, "Get Ready");
+    _updateCast(getReadyTime, 1, 1, "Get Ready", sound: 'beep.mp3');
     if (getReadyTime > 0) {
       _playSound('beep.mp3');
     }
     for (int i = getReadyTime; i > 0; i--) {
       emit(CircuitTimerInitial(i, 1, 1, "Get Ready"));
-      _updateCast(i, 1, 1, "Get Ready");
+      if (i < getReadyTime) {
+        _updateCast(i, 1, 1, "Get Ready", sound: 'beep.mp3');
+      } else {
+        _updateCast(i, 1, 1, "Get Ready");
+      }
       if (i > 1) {
         await Future.delayed(const Duration(seconds: 1));
         _playSound('beep.mp3');
@@ -64,7 +68,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
       }
     }
     _playSound('start.mp3');
-    _startNextSegment(emit, 1, 1, "Work", workTime);
+    _startNextSegment(emit, 1, 1, "Work", workTime, sound: 'start.mp3');
   }
 
   void _onPaused(CircuitTimerPause event, Emitter<CircuitTimerState> emit) {
@@ -94,6 +98,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
       _updateCast(event.duration, state.currentRound, state.currentStation, state.currentState);
     } else {
       _playSound('end.mp3');
+      _updateCast(0, state.currentRound, state.currentStation, state.currentState, sound: 'end.mp3');
       await _determineNextState(emit);
     }
   }
@@ -101,10 +106,10 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
   Future<void> _determineNextState(Emitter<CircuitTimerState> emit) async {
     if (state.currentState == "Work") {
       if (state.currentStation < stations) {
-        _startNextSegment(emit, state.currentRound, state.currentStation + 1, "Rest", restTime);
+        _startNextSegment(emit, state.currentRound, state.currentStation + 1, "Rest", restTime, sound: 'start.mp3');
       } else {
         if (state.currentRound < rounds) {
-          _startNextSegment(emit, state.currentRound + 1, 1, "Round Rest", restBetweenRounds);
+          _startNextSegment(emit, state.currentRound + 1, 1, "Round Rest", restBetweenRounds, sound: 'start.mp3');
         } else {
           emit(const CircuitTimerComplete());
           _updateCast(0, rounds, stations, "Finished");
@@ -113,20 +118,20 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
         }
       }
     } else if (state.currentState == "Rest") {
-      _startNextSegment(emit, state.currentRound, state.currentStation, "Work", workTime);
+      _startNextSegment(emit, state.currentRound, state.currentStation, "Work", workTime, sound: 'start.mp3');
     } else if (state.currentState == "Round Rest") {
-      _startNextSegment(emit, state.currentRound, 1, "Work", workTime);
+      _startNextSegment(emit, state.currentRound, 1, "Work", workTime, sound: 'start.mp3');
     }
   }
 
-  void _startNextSegment(Emitter<CircuitTimerState> emit, int round, int station, String currentState, int duration) {
+  void _startNextSegment(Emitter<CircuitTimerState> emit, int round, int station, String currentState, int duration, {String? sound}) {
     emit(CircuitTimerInProgress(duration, round, station, currentState));
-    _updateCast(duration, round, station, currentState);
+    _updateCast(duration, round, station, currentState, sound: sound);
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker.tick(ticks: duration).listen((d) => add(_CircuitTimerTicked(duration: d)));
   }
 
-  void _updateCast(int duration, int round, int station, String currentState, {bool isPaused = false}) {
+  void _updateCast(int duration, int round, int station, String currentState, {bool isPaused = false, String? sound}) {
     String color;
     if (isPaused) {
       color = "#FFEB3B";
@@ -163,6 +168,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
       round: round,
       totalRounds: rounds,
       backgroundColor: color,
+      sound: sound,
     );
   }
 

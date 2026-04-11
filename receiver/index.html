@@ -65,6 +65,19 @@
 
         let clockInterval = setInterval(updateLiveClock, 1000);
 
+        const sounds = {
+            'beep.mp3': new Audio('https://raw.githubusercontent.com/bill538/gym_timer/agent-v1/assets/sounds/beep.mp3'),
+            'start.mp3': new Audio('https://raw.githubusercontent.com/bill538/gym_timer/agent-v1/assets/sounds/start.mp3'),
+            'end.mp3': new Audio('https://raw.githubusercontent.com/bill538/gym_timer/agent-v1/assets/sounds/end.mp3')
+        };
+
+        function playSound(name) {
+            if (sounds[name]) {
+                sounds[name].currentTime = 0;
+                sounds[name].play().catch(e => console.error('Error playing sound:', e));
+            }
+        }
+
         context.addCustomMessageListener(NAMESPACE, (event) => {
             console.log('Received message:', event.data);
             let data;
@@ -92,6 +105,10 @@
                     roundsElement.innerText = `Round ${data.round} / ${data.totalRounds}`;
                 } else {
                     roundsElement.innerText = '';
+                }
+
+                if (data.sound) {
+                    playSound(data.sound);
                 }
             } else if (data.type === 'idle') {
                 // Return to live clock

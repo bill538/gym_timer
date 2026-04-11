@@ -45,14 +45,18 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   void _onStarted(TabataTimerStarted event, Emitter<TabataTimerState> emit) async {
     final int getReadyTime = AppSettings.getReadyDuration;
     
-    _updateCast(getReadyTime, 1, "Get Ready");
+    _updateCast(getReadyTime, 1, "Get Ready", sound: 'beep.mp3');
     if (getReadyTime > 0) {
       _playSound('beep.mp3');
     }
     
     for (int i = getReadyTime; i > 0; i--) {
       emit(TabataTimerInitial(i, 1, "Get Ready"));
-      _updateCast(i, 1, "Get Ready");
+      if (i < getReadyTime) {
+        _updateCast(i, 1, "Get Ready", sound: 'beep.mp3');
+      } else {
+        _updateCast(i, 1, "Get Ready");
+      }
       if (i > 1) {
         await Future.delayed(const Duration(seconds: 1));
         _playSound('beep.mp3');
@@ -61,7 +65,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       }
     }
     _playSound('start.mp3');
-    _startNextSegment(emit, 1, "Work", workTime);
+    _startNextSegment(emit, 1, "Work", workTime, sound: 'start.mp3');
   }
 
   void _onPaused(TabataTimerPause event, Emitter<TabataTimerState> emit) {
@@ -91,6 +95,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       _updateCast(event.duration, state.currentRound, state.currentState);
     } else {
       _playSound('end.mp3');
+      _updateCast(0, state.currentRound, state.currentState, sound: 'end.mp3');
       await _determineNextState(emit);
     }
   }
@@ -98,7 +103,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   Future<void> _determineNextState(Emitter<TabataTimerState> emit) async {
     if (state.currentState == "Work") {
       if (state.currentRound < rounds) {
-        _startNextSegment(emit, state.currentRound, "Rest", restTime);
+        _startNextSegment(emit, state.currentRound, "Rest", restTime, sound: 'start.mp3');
       } else {
         emit(const TabataTimerFinished());
         _updateCast(0, rounds, "Finished");
@@ -106,18 +111,18 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
         emit(const TabataTimerComplete());
       }
     } else if (state.currentState == "Rest") {
-      _startNextSegment(emit, state.currentRound + 1, "Work", workTime);
+      _startNextSegment(emit, state.currentRound + 1, "Work", workTime, sound: 'start.mp3');
     }
   }
 
-  void _startNextSegment(Emitter<TabataTimerState> emit, int round, String currentState, int duration) {
+  void _startNextSegment(Emitter<TabataTimerState> emit, int round, String currentState, int duration, {String? sound}) {
     emit(TabataTimerInProgress(duration, round, currentState));
-    _updateCast(duration, round, currentState);
+    _updateCast(duration, round, currentState, sound: sound);
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker.tick(ticks: duration).listen((d) => add(_TabataTimerTicked(duration: d)));
   }
 
-  void _updateCast(int duration, int round, String currentState, {bool isPaused = false}) {
+  void _updateCast(int duration, int round, String currentState, {bool isPaused = false, String? sound}) {
     String color;
     if (isPaused) {
       color = "#FFEB3B"; // Yellow for pause
@@ -149,6 +154,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       round: round,
       totalRounds: rounds,
       backgroundColor: color,
+      sound: sound,
     );
   }
 
