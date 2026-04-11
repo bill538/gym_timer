@@ -170,7 +170,10 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: GestureDetector(
+          onTap: _launchUrl,
+          child: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold))
+        ),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
         actions: [
@@ -281,6 +284,7 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                     subtitle: 'Simple Countdown',
                     icon: Icons.hourglass_empty,
                     glowColor: Colors.purple.shade400,
+                    isHorizontal: true,
                     onTap: () {
                       Navigator.push(
                         context,
