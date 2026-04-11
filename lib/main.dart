@@ -12,6 +12,9 @@ void main() async {
   // Load settings on app startup
   final prefs = await SharedPreferences.getInstance();
   AppSettings.getReadyDuration = prefs.getInt('getReadyDuration') ?? AppSettings.getReadyDuration;
+  AppSettings.lastCastDeviceName = prefs.getString('lastCastDeviceName') ?? AppSettings.lastCastDeviceName;
+  AppSettings.lastCastDeviceId = prefs.getString('lastCastDeviceId') ?? AppSettings.lastCastDeviceId;
+  AppSettings.autoConnectChromecast = prefs.getBool('autoConnectChromecast') ?? AppSettings.autoConnectChromecast;
 
   CastService.initialize();
   runApp(const GymTimerApp());

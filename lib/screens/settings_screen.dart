@@ -12,6 +12,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   int _currentGetReadyDuration = AppSettings.getReadyDuration;
+  String _lastCastDeviceName = AppSettings.lastCastDeviceName;
+  bool _autoConnectChromecast = AppSettings.autoConnectChromecast;
 
   @override
   void initState() {
@@ -24,6 +26,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _currentGetReadyDuration = prefs.getInt('getReadyDuration') ?? AppSettings.getReadyDuration;
       AppSettings.getReadyDuration = _currentGetReadyDuration;
+      _lastCastDeviceName = prefs.getString('lastCastDeviceName') ?? AppSettings.lastCastDeviceName;
+      AppSettings.lastCastDeviceName = _lastCastDeviceName;
+      _autoConnectChromecast = prefs.getBool('autoConnectChromecast') ?? AppSettings.autoConnectChromecast;
+      AppSettings.autoConnectChromecast = _autoConnectChromecast;
     });
   }
 
@@ -33,6 +39,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       AppSettings.getReadyDuration = newDuration;
       _currentGetReadyDuration = newDuration;
+    });
+  }
+
+  _saveCastDeviceName(String newName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lastCastDeviceName', newName);
+    setState(() {
+      AppSettings.lastCastDeviceName = newName;
+      _lastCastDeviceName = newName;
+    });
+  }
+
+  _saveAutoConnectChromecast(bool newValue) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('autoConnectChromecast', newValue);
+    setState(() {
+      AppSettings.autoConnectChromecast = newValue;
+      _autoConnectChromecast = newValue;
     });
   }
 
@@ -48,6 +72,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Get Ready Time (seconds)'),
             trailing: Text('$_currentGetReadyDuration'),
             onTap: () => _showGetReadyDurationPicker(context),
+          ),
+          ListTile(
+            title: const Text('Last Connected Chromecast'),
+            trailing: Text(_lastCastDeviceName.isEmpty ? 'None' : _lastCastDeviceName),
+          ),
+          SwitchListTile(
+            title: const Text('Auto Connect Chromecast'),
+            value: _autoConnectChromecast,
+            onChanged: (bool value) {
+              _saveAutoConnectChromecast(value);
+            },
           ),
         ],
       ),
