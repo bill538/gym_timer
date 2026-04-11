@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,54 +33,55 @@ class CastService {
     });
   }
 
-  static Future<void> checkAndAutoConnect() async {
+  static Future<void> checkAndAutoConnect({BuildContext? context}) async {
     final sessionManager = GoogleCastSessionManager.instance;
     
     // Check if already connected or connecting
     if (sessionManager.connectionState == GoogleCastConnectState.connected ||
         sessionManager.connectionState == GoogleCastConnectState.connecting) {
-      print("Cast auto-connect: Already connected or connecting.");
+      debugPrint("Cast auto-connect: Already connected or connecting.");
       return;
     }
+
+    // Refresh settings from storage before checking
+    final prefs = await SharedPreferences.getInstance();
+    AppSettings.autoConnectChromecast = prefs.getBool('autoConnectChromecast') ?? AppSettings.autoConnectChromecast;
+    AppSettings.lastCastDeviceId = prefs.getString('lastCastDeviceId') ?? AppSettings.lastCastDeviceId;
+    AppSettings.lastCastDeviceName = prefs.getString('lastCastDeviceName') ?? AppSettings.lastCastDeviceName;
+
+    debugPrint("Cast auto-connect check: autoConnect=${AppSettings.autoConnectChromecast}, lastId=${AppSettings.lastCastDeviceId}");
 
     // Check settings
     if (AppSettings.autoConnectChromecast && 
         AppSettings.lastCastDeviceId.isNotEmpty) {
       
-      print("Cast auto-connect: Attempting to connect to: ${AppSettings.lastCastDeviceName} (${AppSettings.lastCastDeviceId})");
+      final msg = "Attempting to auto-connect to: ${AppSettings.lastCastDeviceName}";
+      debugPrint("Cast auto-connect: $msg");
+      if (context != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 2)));
+      }
       
       try {
-        // First try to see if it's already in the discovery list
-        final devices = await GoogleCastDiscoveryManager.instance.devicesStream.first.timeout(
-          const Duration(milliseconds: 500),
-          onTimeout: () => [],
+        // Construct manual reference
+        final targetDevice = GoogleCastDevice(
+          deviceID: AppSettings.lastCastDeviceId,
+          friendlyName: AppSettings.lastCastDeviceName,
+          modelName: AppSettings.lastCastDeviceName,
+          statusText: '',
+          deviceVersion: '',
+          isOnLocalNetwork: true,
+          category: '',
+          uniqueID: AppSettings.lastCastDeviceId,
         );
-        
-        GoogleCastDevice? targetDevice;
-        try {
-          targetDevice = devices.firstWhere((d) => d.deviceID == AppSettings.lastCastDeviceId);
-          print("Cast auto-connect: Found device in discovery list.");
-        } catch (_) {
-          print("Cast auto-connect: Device not in discovery list, creating manual reference.");
-          targetDevice = GoogleCastDevice(
-            deviceID: AppSettings.lastCastDeviceId,
-            friendlyName: AppSettings.lastCastDeviceName,
-            modelName: AppSettings.lastCastDeviceName,
-            statusText: '',
-            deviceVersion: '',
-            isOnLocalNetwork: true,
-            category: '',
-            uniqueID: AppSettings.lastCastDeviceId,
-          );
-        }
 
         await sessionManager.startSessionWithDevice(targetDevice);
-        print("Cast auto-connect: Session start request sent.");
+        debugPrint("Cast auto-connect: Session start request sent.");
       } catch (e) {
-        print("Cast auto-connect: Failed to start session: $e");
+        debugPrint("Cast auto-connect: Failed to start session: $e");
+        if (context != null && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Auto-connect failed: $e")));
+        }
       }
-    } else {
-      print("Cast auto-connect: Disabled or no last device ID found.");
     }
   }
 
