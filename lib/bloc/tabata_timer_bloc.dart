@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:gym_timer/ticker/ticker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:gym_timer/services/cast_service.dart';
+import 'package:gym_timer/settings.dart';
 
 part 'tabata_timer_event.dart';
 part 'tabata_timer_state.dart';
@@ -25,7 +26,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
     required this.restTime,
     required this.rounds,
   }) : _ticker = ticker,
-       super(const TabataTimerInitial(5, 1, "Get Ready")) {
+       super(TabataTimerInitial(AppSettings.getReadyDuration, 1, "Get Ready")) {
     on<TabataTimerStarted>(_onStarted);
     on<TabataTimerPause>(_onPaused);
     on<TabataTimerResumed>(_onResumed);
@@ -42,15 +43,20 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
   }
 
   void _onStarted(TabataTimerStarted event, Emitter<TabataTimerState> emit) async {
-    _updateCast(0, 1, "Get Ready");
-    _playSound('beep.mp3');
-    for (int i = 3; i > 0; i--) {
+    final int getReadyTime = AppSettings.getReadyDuration;
+    
+    _updateCast(getReadyTime, 1, "Get Ready");
+    if (getReadyTime > 0) {
+      _playSound('beep.mp3');
+    }
+    
+    for (int i = getReadyTime; i > 0; i--) {
       emit(TabataTimerInitial(i, 1, "Get Ready"));
       _updateCast(i, 1, "Get Ready");
       if (i > 1) {
         await Future.delayed(const Duration(seconds: 1));
         _playSound('beep.mp3');
-      } else {
+      } else if (i == 1) {
         await Future.delayed(const Duration(seconds: 1));
       }
     }
