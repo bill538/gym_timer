@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -62,17 +63,31 @@ class CastService {
       }
       
       try {
-        // Construct manual reference
-        final targetDevice = GoogleCastDevice(
-          deviceID: AppSettings.lastCastDeviceId,
-          friendlyName: AppSettings.lastCastDeviceName,
-          modelName: AppSettings.lastCastDeviceName,
-          statusText: '',
-          deviceVersion: '',
-          isOnLocalNetwork: true,
-          category: '',
-          uniqueID: AppSettings.lastCastDeviceId,
-        );
+        // Use Platform-specific device types to avoid casting errors
+        GoogleCastDevice targetDevice;
+        if (Platform.isAndroid) {
+          targetDevice = GoogleCastAndroidDevice(
+            deviceID: AppSettings.lastCastDeviceId,
+            friendlyName: AppSettings.lastCastDeviceName,
+            modelName: AppSettings.lastCastDeviceName,
+            statusText: '',
+            deviceVersion: '',
+            isOnLocalNetwork: true,
+            category: '',
+            uniqueID: AppSettings.lastCastDeviceId,
+          );
+        } else {
+          targetDevice = GoogleCastDevice(
+            deviceID: AppSettings.lastCastDeviceId,
+            friendlyName: AppSettings.lastCastDeviceName,
+            modelName: AppSettings.lastCastDeviceName,
+            statusText: '',
+            deviceVersion: '',
+            isOnLocalNetwork: true,
+            category: '',
+            uniqueID: AppSettings.lastCastDeviceId,
+          );
+        }
 
         await sessionManager.startSessionWithDevice(targetDevice);
         debugPrint("Cast auto-connect: Session start request sent.");
