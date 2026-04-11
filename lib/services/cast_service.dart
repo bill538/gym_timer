@@ -63,34 +63,44 @@ class CastService {
       }
       
       try {
-        // Use Platform-specific device types to avoid casting errors
-        GoogleCastDevice targetDevice;
-        if (Platform.isAndroid) {
-          targetDevice = GoogleCastAndroidDevice(
-            deviceID: AppSettings.lastCastDeviceId,
-            friendlyName: AppSettings.lastCastDeviceName,
-            modelName: AppSettings.lastCastDeviceName,
-            statusText: '',
-            deviceVersion: '',
-            isOnLocalNetwork: true,
-            category: '',
-            uniqueID: AppSettings.lastCastDeviceId,
-          );
-        } else {
-          targetDevice = GoogleCastDevice(
-            deviceID: AppSettings.lastCastDeviceId,
-            friendlyName: AppSettings.lastCastDeviceName,
-            modelName: AppSettings.lastCastDeviceName,
-            statusText: '',
-            deviceVersion: '',
-            isOnLocalNetwork: true,
-            category: '',
-            uniqueID: AppSettings.lastCastDeviceId,
-          );
+        // Construct manual reference
+        final targetDevice = GoogleCastDevice(
+          deviceID: AppSettings.lastCastDeviceId,
+          friendlyName: AppSettings.lastCastDeviceName,
+          modelName: AppSettings.lastCastDeviceName,
+          statusText: '',
+          deviceVersion: '',
+          isOnLocalNetwork: true,
+          category: '',
+          uniqueID: AppSettings.lastCastDeviceId,
+        );
+
+        // Instead of starting a new session with a dummy object, 
+        // trigger discovery to find the real device reference
+        GoogleCastDiscoveryManager.instance.startDiscovery();
+        
+        // Wait up to 5 seconds for the real device to appear in the stream
+        final devices = await GoogleCastDiscoveryManager.instance.devicesStream.first.timeout(
+          const Duration(seconds: 5),
+          onTimeout: () => [],
+        );
+        
+        GoogleCastDevice? foundDevice;
+        try {
+          foundDevice = devices.firstWhere((d) => d.deviceID == AppSettings.lastCastDeviceId);
+          debugPrint("Cast auto-connect: Real device found in discovery.");
+        } catch (_) {
+          debugPrint("Cast auto-connect: Device not found in discovery, using manual fallback.");
+          foundDevice = targetDevice;
         }
 
-        await sessionManager.startSessionWithDevice(targetDevice);
+        await sessionManager.startSessionWithDevice(foundDevice);
         debugPrint("Cast auto-connect: Session start request sent.");
+        
+        // Stop discovery after attempt
+        Future.delayed(const Duration(seconds: 2), () {
+          GoogleCastDiscoveryManager.instance.stopDiscovery();
+        });
       } catch (e) {
         debugPrint("Cast auto-connect: Failed to start session: $e");
         if (context != null && context.mounted) {
