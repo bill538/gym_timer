@@ -44,6 +44,14 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
               backgroundColor: backgroundColor,
               elevation: 0,
               automaticallyImplyLeading: false, // No default back button
+              leading: IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 30), // Hamburger menu icon
+                onPressed: () {
+                  print('Settings button pressed!');
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                },
+                tooltip: 'Settings',
+              ),
               title: const Text(
                 '21BOOM',
                 style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
@@ -56,33 +64,7 @@ class _ActiveTimerScreenState extends State<ActiveTimerScreen> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      print('Settings button pressed!');
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    ),
-                    child: Text(
-                      'Settings',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  SizedBox(height: 10), // Small spacing
-                  Text(
-                    'Test content below button.',
-                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
+
             // Original content area (simplified for now)
             Expanded(
               child: Center(
