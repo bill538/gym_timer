@@ -69,16 +69,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Get Ready Time (seconds)'),
-            trailing: Text('$_currentGetReadyDuration'),
+            title: const Text('Get Ready\nTime (secs)', style: TextStyle(height: 1.2)),
+            trailing: Text('$_currentGetReadyDuration', style: const TextStyle(fontSize: 18)),
             onTap: () => _showGetReadyDurationPicker(context),
           ),
+          const Divider(),
           ListTile(
-            title: const Text('Last Connected Chromecast'),
-            trailing: Text(_lastCastDeviceName.isEmpty ? 'None' : _lastCastDeviceName),
+            title: const Text('Last\nConnected\nChromecast', style: TextStyle(height: 1.2)),
+            trailing: SizedBox(
+              width: 150, // Give trailing enough fixed width to prevent squishing title
+              child: Text(
+                _lastCastDeviceName.isEmpty ? 'None' : _lastCastDeviceName,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
           ),
+          const Divider(),
           SwitchListTile(
-            title: const Text('Auto Connect Chromecast'),
+            title: const Text('Auto Connect\nChromecast', style: TextStyle(height: 1.2)),
             value: _autoConnectChromecast,
             onChanged: (bool value) {
               _saveAutoConnectChromecast(value);
