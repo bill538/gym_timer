@@ -31,8 +31,9 @@ class _SetupScreenState extends State<SetupScreen> {
     _timeString = _formatDateTime(DateTime.now());
     _idleTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
 
-    // Attempt auto-connection to Chromecast on startup
+    // Trigger auto-connect immediately and on a short delay
     CastService.checkAndAutoConnect();
+    Future.delayed(const Duration(seconds: 2), () => CastService.checkAndAutoConnect());
   }
 
   void _autoConnectChromecast() async {
