@@ -267,20 +267,27 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                           );
                         },
                       ),
-                      WorkoutCard(
-                        title: 'GENERAL',
-                        subtitle: 'Simple Timer',
-                        icon: Icons.hourglass_empty,
-                        glowColor: Colors.purple.shade400,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const GeneralTimerSetupScreen()),
-                          );
-                        },
-                      ),
                     ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 100,
+                  child: WorkoutCard(
+                    title: 'GENERAL TIMER',
+                    subtitle: 'Simple Countdown',
+                    icon: Icons.hourglass_empty,
+                    glowColor: Colors.purple.shade400,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const GeneralTimerSetupScreen()),
+                      );
+                    },
                   ),
                 ),
               ),

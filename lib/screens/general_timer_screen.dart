@@ -154,7 +154,7 @@ class GeneralTimerView extends StatelessWidget {
                     const SizedBox(height: 20),
                     Text(
                       '${(state.duration ~/ 60).toString().padLeft(2, '0')}:${(state.duration % 60).toString().padLeft(2, '0')}',
-                      style: const TextStyle(fontSize: 120, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 100, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ] else if (state is TimerRunComplete)
                     const Text(
