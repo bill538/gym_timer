@@ -147,6 +147,16 @@ class _SetupScreenState extends State<SetupScreen> {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white, size: 30), // Hamburger menu icon
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+            tooltip: 'Settings',
+          ),
         ],
       ),
       body: Column(
@@ -261,22 +271,7 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white, size: 30),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                  );
-                },
-                tooltip: 'Settings',
-              ),
-            ),
-          ),
+
         ],
       ),
     );
