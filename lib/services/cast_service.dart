@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,24 +34,37 @@ class CastService {
     });
   }
 
-  static Future<void> checkAndAutoConnect() async {
+  static Future<void> checkAndAutoConnect({BuildContext? context}) async {
     final sessionManager = GoogleCastSessionManager.instance;
     
     // Check if already connected or connecting
     if (sessionManager.connectionState == GoogleCastConnectState.connected ||
         sessionManager.connectionState == GoogleCastConnectState.connecting) {
+      debugPrint("Cast auto-connect: Already connected or connecting.");
       return;
     }
+
+    // Refresh settings from storage before checking
+    final prefs = await SharedPreferences.getInstance();
+    AppSettings.autoConnectChromecast = prefs.getBool('autoConnectChromecast') ?? AppSettings.autoConnectChromecast;
+    AppSettings.lastCastDeviceId = prefs.getString('lastCastDeviceId') ?? AppSettings.lastCastDeviceId;
+    AppSettings.lastCastDeviceName = prefs.getString('lastCastDeviceName') ?? AppSettings.lastCastDeviceName;
+
+    debugPrint("Cast auto-connect check: autoConnect=${AppSettings.autoConnectChromecast}, lastId=${AppSettings.lastCastDeviceId}");
 
     // Check settings
     if (AppSettings.autoConnectChromecast && 
         AppSettings.lastCastDeviceId.isNotEmpty) {
       
-      print("Attempting auto-connect to: ${AppSettings.lastCastDeviceName} (${AppSettings.lastCastDeviceId})");
+      final msg = "Attempting to auto-connect to: ${AppSettings.lastCastDeviceName}";
+      debugPrint("Cast auto-connect: $msg");
+      if (context != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 2)));
+      }
       
       try {
-        // Construct dummy device for connection attempt
-        final lastDevice = GoogleCastDevice(
+        // Construct manual reference
+        final targetDevice = GoogleCastDevice(
           deviceID: AppSettings.lastCastDeviceId,
           friendlyName: AppSettings.lastCastDeviceName,
           modelName: AppSettings.lastCastDeviceName,
@@ -60,9 +75,61 @@ class CastService {
           uniqueID: AppSettings.lastCastDeviceId,
         );
 
-        await sessionManager.startSessionWithDevice(lastDevice);
+        // First try to see if it's already in the discovery list
+        GoogleCastDiscoveryManager.instance.startDiscovery();
+        
+        // Wait up to 5 seconds for the real device to appear in the stream
+        final devices = await GoogleCastDiscoveryManager.instance.devicesStream.first.timeout(
+          const Duration(seconds: 5),
+          onTimeout: () => [],
+        );
+        
+        GoogleCastDevice? foundDevice;
+        try {
+          foundDevice = devices.firstWhere((d) => d.deviceID == AppSettings.lastCastDeviceId);
+          debugPrint("Cast auto-connect: Real device found in discovery.");
+        } catch (_) {
+          debugPrint("Cast auto-connect: Device not found in discovery, creating manual reference.");
+          if (Platform.isAndroid) {
+            foundDevice = GoogleCastAndroidDevice(
+              deviceID: AppSettings.lastCastDeviceId,
+              friendlyName: AppSettings.lastCastDeviceName,
+              modelName: AppSettings.lastCastDeviceName,
+              statusText: '',
+              deviceVersion: '',
+              isOnLocalNetwork: true,
+              category: '',
+              uniqueID: AppSettings.lastCastDeviceId,
+            );
+          } else {
+            foundDevice = GoogleCastDevice(
+              deviceID: AppSettings.lastCastDeviceId,
+              friendlyName: AppSettings.lastCastDeviceName,
+              modelName: AppSettings.lastCastDeviceName,
+              statusText: '',
+              deviceVersion: '',
+              isOnLocalNetwork: true,
+              category: '',
+              uniqueID: AppSettings.lastCastDeviceId,
+            );
+          }
+        }
+
+        // Add a small delay to ensure the discovery manager has settled before starting session
+        await Future.delayed(const Duration(seconds: 2));
+
+        await sessionManager.startSessionWithDevice(foundDevice!);
+        debugPrint("Cast auto-connect: Session start request sent.");
+        
+        // Stop discovery after attempt
+        Future.delayed(const Duration(seconds: 2), () {
+          GoogleCastDiscoveryManager.instance.stopDiscovery();
+        });
       } catch (e) {
-        print("Failed to auto-connect: $e");
+        debugPrint("Cast auto-connect: Failed to start session: $e");
+        if (context != null && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Auto-connect failed: $e")));
+        }
       }
     }
   }
