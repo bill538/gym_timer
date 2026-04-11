@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:gym_timer/screens/splash_screen.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:gym_timer/services/cast_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gym_timer/settings.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load settings on app startup
+  final prefs = await SharedPreferences.getInstance();
+  AppSettings.getReadyDuration = prefs.getInt('getReadyDuration') ?? AppSettings.getReadyDuration;
+
   CastService.initialize();
   runApp(const GymTimerApp());
 }

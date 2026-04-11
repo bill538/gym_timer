@@ -55,11 +55,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     }
     
     await _playSound('start.mp3'); // Wait for start sound to finish
-    if (workoutType == "EMOM") {
-      emit(TimerRunInProgress(0)); // Start EMOM at 0
-    } else {
-      emit(TimerRunInProgress(event.duration));
-    }
+    emit(TimerRunInProgress(event.duration));
     _updateCast(event.duration, "Go!");
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
@@ -92,6 +88,11 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     if (event.duration > 0) {
       emit(TimerRunInProgress(event.duration));
       _updateCast(event.duration, "Go!");
+
+      // Play beep.mp3 at the end of every minute for EMOM
+      if (workoutType == "EMOM" && event.duration % 60 == 0) {
+        _playSound('beep.mp3');
+      }
     } else {
       _playSound('end.mp3');
       emit(const TimerRunComplete());
