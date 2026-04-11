@@ -73,12 +73,24 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _launchURL,
-        child: Center(
-          child: Image.asset('assets/images/thankyou.png'),
-        ),
+      body: Stack(
+        children: [
+          // This captures taps on the background
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _launchURL,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          // This captures taps on the image specifically
+          Center(
+            child: GestureDetector(
+              onTap: _launchURL,
+              child: Image.asset('assets/images/thankyou.png'),
+            ),
+          ),
+        ],
       ),
     );
   }
