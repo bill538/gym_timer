@@ -35,6 +35,8 @@ class CircuitTimerScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is CircuitTimerFinished) {
             Navigator.of(context).popUntil((route) => route.isFirst);
+            // Re-trigger auto-connect when returning to main screen
+            CastService.checkAndAutoConnect(context: context);
           }
         },
         child: const CircuitTimerView(),

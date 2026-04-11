@@ -20,7 +20,7 @@ class SetupScreen extends StatefulWidget {
   State<SetupScreen> createState() => _SetupScreenState();
 }
 
-class _SetupScreenState extends State<SetupScreen> {
+class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver {
   late String _timeString;
 
   Timer? _idleTimer;
@@ -28,11 +28,20 @@ class _SetupScreenState extends State<SetupScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _timeString = _formatDateTime(DateTime.now());
     _idleTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
 
     // Trigger auto-connect with a delay to ensure context is ready
     Future.delayed(const Duration(milliseconds: 500), () => CastService.checkAndAutoConnect(context: context));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Re-check auto-connect when app wakes up/comes to foreground
+      CastService.checkAndAutoConnect(context: context);
+    }
   }
 
   void _autoConnectChromecast() async {
@@ -41,6 +50,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _idleTimer?.cancel();
     super.dispose();
   }
