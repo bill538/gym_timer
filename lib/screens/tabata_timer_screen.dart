@@ -148,6 +148,8 @@ class TabataTimerView extends StatelessWidget {
       listener: (context, state) {
         if (state is TabataTimerComplete) {
           Navigator.of(context).popUntil((route) => route.isFirst);
+          // Re-trigger auto-connect when returning to main screen
+          CastService.checkAndAutoConnect(context: context);
         }
       },
       child: Scaffold(

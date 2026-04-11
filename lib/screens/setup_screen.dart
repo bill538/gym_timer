@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_timer/services/cast_service.dart';
 import 'package:gym_timer/screens/settings_screen.dart'; // Import the settings screen
 import 'package:gym_timer/settings.dart';
+import 'package:gym_timer/main.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -20,7 +21,7 @@ class SetupScreen extends StatefulWidget {
   State<SetupScreen> createState() => _SetupScreenState();
 }
 
-class _SetupScreenState extends State<SetupScreen> {
+class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, RouteAware {
   late String _timeString;
 
   Timer? _idleTimer;
@@ -28,11 +29,38 @@ class _SetupScreenState extends State<SetupScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _timeString = _formatDateTime(DateTime.now());
     _idleTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
 
     // Trigger auto-connect with a delay to ensure context is ready
     Future.delayed(const Duration(milliseconds: 500), () => CastService.checkAndAutoConnect(context: context));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Register this screen for route transitions
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      GymTimerApp.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // This is called when the top route was popped and this route is now visible
+    // e.g., coming back from a Setup screen
+    debugPrint("SetupScreen: Returned from another screen, checking auto-connect");
+    CastService.checkAndAutoConnect(context: context);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Re-check auto-connect when app wakes up/comes to foreground
+      CastService.checkAndAutoConnect(context: context);
+    }
   }
 
   void _autoConnectChromecast() async {
@@ -41,6 +69,8 @@ class _SetupScreenState extends State<SetupScreen> {
 
   @override
   void dispose() {
+    GymTimerApp.routeObserver.unsubscribe(this);
+    WidgetsBinding.instance.removeObserver(this);
     _idleTimer?.cancel();
     super.dispose();
   }

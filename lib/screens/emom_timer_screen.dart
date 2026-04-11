@@ -21,6 +21,8 @@ class EmomTimerScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is TimerRunFinished) {
             Navigator.of(context).popUntil((route) => route.isFirst);
+            // Re-trigger auto-connect when returning to main screen
+            CastService.checkAndAutoConnect(context: context);
           }
         },
         child: EmomTimerView(minutes: minutes),

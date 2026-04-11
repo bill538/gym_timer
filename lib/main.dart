@@ -23,6 +23,8 @@ void main() async {
 class GymTimerApp extends StatelessWidget {
   const GymTimerApp({super.key});
 
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,6 +37,7 @@ class GymTimerApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
+      navigatorObservers: [routeObserver],
     );
   }
 }
