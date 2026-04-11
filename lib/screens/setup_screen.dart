@@ -11,6 +11,7 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_timer/services/cast_service.dart';
 import 'package:gym_timer/screens/settings_screen.dart'; // Import the settings screen
+import 'package:gym_timer/screens/general_timer_screen.dart';
 import 'package:gym_timer/settings.dart';
 import 'package:gym_timer/main.dart';
 
@@ -169,7 +170,10 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: GestureDetector(
+          onTap: _launchUrl,
+          child: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold))
+        ),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
         actions: [
@@ -267,6 +271,27 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                         },
                       ),
                     ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 100,
+                  child: WorkoutCard(
+                    title: 'GENERAL TIMER',
+                    subtitle: 'Simple Countdown',
+                    icon: Icons.hourglass_empty,
+                    glowColor: Colors.purple.shade400,
+                    isHorizontal: true,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const GeneralTimerSetupScreen()),
+                      );
+                    },
                   ),
                 ),
               ),

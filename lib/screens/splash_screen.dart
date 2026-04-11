@@ -18,11 +18,22 @@ class _SplashScreenState extends State<SplashScreen> {
     // Move initialization to microtask to avoid blocking startup
     Future.delayed(Duration.zero, () => _initCast());
     
+    // Use a flag to prevent navigation if we are launching a URL
+    _startTimer();
+  }
+
+  bool _isLaunching = false;
+
+  void _startTimer() {
     Timer(
-      const Duration(seconds: 2),
-      () => Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (BuildContext context) => const SetupScreen()),
-      ),
+      const Duration(seconds: 4), // Increased to 4s to give more time to tap
+      () {
+        if (mounted && !_isLaunching) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (BuildContext context) => const SetupScreen()),
+          );
+        }
+      },
     );
   }
 
@@ -61,23 +72,64 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _launchURL() async {
+    if (_isLaunching) return;
+    
     final Uri url = Uri.parse('https://www.21-boom.com/');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
+    debugPrint('Splash: Attempting to launch $url');
+    
+    setState(() {
+      _isLaunching = true;
+    });
+
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        debugPrint('Splash: Could not launch $url');
+      }
+    } catch (e) {
+      debugPrint('Splash: Error launching URL: $e');
+    } finally {
+      // Allow navigation to proceed after a delay if launch fails or app returns
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() {
+            _isLaunching = false;
+          });
+          // If we are still on this screen, proceed to setup
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (BuildContext context) => const SetupScreen()),
+          );
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _launchURL,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Image.asset('assets/images/thankyou.png'),
-        ),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // This captures taps on the background
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _launchURL,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          // This captures taps on the image specifically
+          Center(
+            child: GestureDetector(
+              onTap: _launchURL,
+              child: Image.asset('assets/images/thankyou.png'),
+            ),
+          ),
+        ],
       ),
     );
   }

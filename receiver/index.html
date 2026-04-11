@@ -87,7 +87,12 @@
                 // DISPLAY ONLY THE WORKOUT TIMER (mm:ss or seconds as passed)
                 clockElement.innerText = data.time;
                 detailsElement.innerText = data.state;
-                roundsElement.innerText = `Round ${data.round} / ${data.totalRounds}`;
+
+                if (data.totalRounds > 1) {
+                    roundsElement.innerText = `Round ${data.round} / ${data.totalRounds}`;
+                } else {
+                    roundsElement.innerText = '';
+                }
             } else if (data.type === 'idle') {
                 // Return to live clock
                 document.body.style.backgroundColor = '#40324B';
