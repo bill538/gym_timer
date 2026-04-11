@@ -76,7 +76,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
           ListTile(
             title: const Text('Last\nConnected\nChromecast', style: TextStyle(height: 1.2)),
-            trailing: Text(_lastCastDeviceName.isEmpty ? 'None' : _lastCastDeviceName, style: const TextStyle(fontSize: 16)),
+            trailing: SizedBox(
+              width: 150, // Give trailing enough fixed width to prevent squishing title
+              child: Text(
+                _lastCastDeviceName.isEmpty ? 'None' : _lastCastDeviceName,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
           ),
           const Divider(),
           SwitchListTile(
