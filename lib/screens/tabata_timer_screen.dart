@@ -52,8 +52,10 @@ class _TabataSetupScreenState extends State<TabataSetupScreen> {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color(0xFF90EE90),
+                foregroundColor: Colors.black,
               ),
-              child: const Text('Start Workout', style: TextStyle(fontSize: 18)),
+              child: const Text('Start Workout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -179,20 +181,31 @@ class TabataTimerView extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      state is TabataTimerPaused ? 'PAUSED' : state.currentState,
-                      style: const TextStyle(
-                          fontSize: 60,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${state.duration}',
-                      style: const TextStyle(
-                          fontSize: 150,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
+                    if (state is TabataTimerComplete || state.currentState == "Done!")
+                      const Text(
+                        'Workout\nComplete!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 60,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      )
+                    else ...[
+                      Text(
+                        state is TabataTimerPaused ? 'PAUSED' : state.currentState,
+                        style: const TextStyle(
+                            fontSize: 60,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${state.duration}',
+                        style: const TextStyle(
+                            fontSize: 150,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                     
                     const Spacer(),
                     

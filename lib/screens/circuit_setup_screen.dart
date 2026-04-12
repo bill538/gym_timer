@@ -51,8 +51,10 @@ class _CircuitSetupScreenState extends State<CircuitSetupScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF90EE90),
+                  foregroundColor: Colors.black,
                 ),
-                child: const Text('Start Workout', style: TextStyle(fontSize: 18)),
+                child: const Text('Start Workout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 20),
             ],

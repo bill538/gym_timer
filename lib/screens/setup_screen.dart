@@ -171,8 +171,26 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
     return Scaffold(
       appBar: AppBar(
         title: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: _launchUrl,
-          child: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold))
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/images/header_logo.png',
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                '21BOOM',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
+          ),
         ),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
@@ -203,143 +221,148 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
       ),
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return Column(
-            children: [
-              Expanded(
-                flex: orientation == Orientation.portrait ? 2 : 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: GridView.count(
-                    crossAxisCount: orientation == Orientation.portrait ? 2 : 4,
-                    crossAxisSpacing: 12.0,
-                    mainAxisSpacing: 12.0,
-                    shrinkWrap: true,
-                    physics: orientation == Orientation.portrait 
-                        ? const NeverScrollableScrollPhysics() 
-                        : const ScrollPhysics(),
-                    children: [
-                      WorkoutCard(
-                        title: 'TABATA',
-                        subtitle: '20s Work / 10s Rest',
-                        icon: Icons.flash_on,
-                        glowColor: Colors.blue.shade400,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const TabataSetupScreen()),
-                          );
-                        },
-                      ),
-                      WorkoutCard(
-                        title: 'EMOM',
-                        subtitle: 'Every Minute on the Minute',
-                        icon: Icons.fitness_center,
-                        glowColor: Colors.yellow.shade400,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EmomSetupScreen()),
-                          );
-                        },
-                      ),
-                      WorkoutCard(
-                        title: 'AMRAP',
-                        subtitle: 'As Many Reps As Possible',
-                        icon: Icons.timer,
-                        glowColor: Colors.green.shade400,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AmrapSetupScreen()),
-                          );
-                        },
-                      ),
-                      WorkoutCard(
-                        title: 'CIRCUIT',
-                        subtitle: 'Variable Intervals',
-                        icon: Icons.sync,
-                        glowColor: Colors.orange.shade400,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CircuitSetupScreen()),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 100,
-                  child: WorkoutCard(
-                    title: 'GENERAL TIMER',
-                    subtitle: 'Simple Countdown',
-                    icon: Icons.hourglass_empty,
-                    glowColor: Colors.purple.shade400,
-                    isHorizontal: true,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const GeneralTimerSetupScreen()),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: orientation == Orientation.portrait ? 1 : 2,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-                    child: SizedBox(
-                      width: orientation == Orientation.portrait 
-                          ? MediaQuery.of(context).size.width * 0.7 
-                          : MediaQuery.of(context).size.width * 0.4,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A),
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.15),
-                            width: 2,
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: GridView.count(
+                            crossAxisCount: orientation == Orientation.portrait ? 2 : 4,
+                            crossAxisSpacing: 12.0,
+                            mainAxisSpacing: 12.0,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              WorkoutCard(
+                                title: 'TABATA',
+                                subtitle: '20s Work / 10s Rest',
+                                icon: Icons.flash_on,
+                                glowColor: Colors.blue.shade400,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const TabataSetupScreen()),
+                                  );
+                                },
+                              ),
+                              WorkoutCard(
+                                title: 'EMOM',
+                                subtitle: 'Every Minute on the Minute',
+                                icon: Icons.fitness_center,
+                                glowColor: Colors.yellow.shade400,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const EmomSetupScreen()),
+                                  );
+                                },
+                              ),
+                              WorkoutCard(
+                                title: 'AMRAP',
+                                subtitle: 'As Many Reps As Possible',
+                                icon: Icons.timer,
+                                glowColor: Colors.green.shade400,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const AmrapSetupScreen()),
+                                  );
+                                },
+                              ),
+                              WorkoutCard(
+                                title: 'CIRCUIT',
+                                subtitle: 'Variable Intervals',
+                                icon: Icons.sync,
+                                glowColor: Colors.orange.shade400,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const CircuitSetupScreen()),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.8),
-                              blurRadius: 10,
-                              offset: const Offset(4, 4),
-                            ),
-                          ],
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Text(
-                              _timeString,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                fontFamily: 'monospace',
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 100,
+                            child: WorkoutCard(
+                              title: 'GENERAL TIMER',
+                              subtitle: 'Simple Countdown',
+                              icon: Icons.hourglass_empty,
+                              glowColor: Colors.purple.shade400,
+                              isHorizontal: true,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const GeneralTimerSetupScreen()),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20.0),
+                              child: SizedBox(
+                                width: orientation == Orientation.portrait 
+                                    ? MediaQuery.of(context).size.width * 0.7 
+                                    : MediaQuery.of(context).size.width * 0.4,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1A1A1A),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.15),
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.8),
+                                        blurRadius: 10,
+                                        offset: const Offset(4, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Text(
+                                        _timeString,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                          fontFamily: 'monospace',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
+              );
+            }
           );
         }
       ),

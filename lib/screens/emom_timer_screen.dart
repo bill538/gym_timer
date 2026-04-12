@@ -95,8 +95,9 @@ class EmomTimerView extends StatelessWidget {
                     ),
                   ] else if (state is TimerRunComplete)
                     const Text(
-                      'Workout Complete!',
-                      style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+                      'Workout\nComplete!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 60, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   
                   const Spacer(),

@@ -135,17 +135,20 @@ class CastService {
   }
 
   static void _startHeartbeat() {
-    Timer.periodic(const Duration(seconds: 30), (timer) async {
-      final isConnected = GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected;
+    Timer.periodic(const Duration(seconds: 10), (timer) async {
+      final sessionManager = GoogleCastSessionManager.instance;
+      final isConnected = sessionManager.connectionState == GoogleCastConnectState.connected;
+      
       if (isConnected) {
-        // Sending a minimal message to keep the session active
+        // Sending a minimal message frequently to keep the session active
+        // Reduced from 30s to 10s to prevent aggressive power-saving disconnects
         try {
           await _channel.invokeMethod('sendCastMessage', {
             'namespace': _namespace,
             'message': jsonEncode({'type': 'heartbeat'}),
           });
         } catch (e) {
-          // Ignore
+          debugPrint("Cast heartbeat failed: $e");
         }
       }
     });
@@ -166,6 +169,7 @@ class CastService {
     required int totalRounds,
     required String backgroundColor,
     String? sound,
+    String? workoutType,
   }) async {
     isWorkoutActive = true;
     await _sendMessage({
@@ -176,6 +180,7 @@ class CastService {
       'totalRounds': totalRounds,
       'backgroundColor': backgroundColor,
       if (sound != null) 'sound': sound,
+      if (workoutType != null) 'workoutType': workoutType,
     });
   }
 

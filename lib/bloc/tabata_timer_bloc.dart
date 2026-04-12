@@ -155,6 +155,7 @@ class TabataTimerBloc extends Bloc<TabataTimerEvent, TabataTimerState> {
       totalRounds: rounds,
       backgroundColor: color,
       sound: sound,
+      workoutType: "Tabata",
     );
   }
 
