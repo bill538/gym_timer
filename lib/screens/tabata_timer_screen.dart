@@ -181,20 +181,31 @@ class TabataTimerView extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      state is TabataTimerPaused ? 'PAUSED' : state.currentState,
-                      style: const TextStyle(
-                          fontSize: 60,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${state.duration}',
-                      style: const TextStyle(
-                          fontSize: 150,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
+                    if (state is TabataTimerComplete || state.currentState == "Done!")
+                      const Text(
+                        'Workout\nComplete!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 60,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      )
+                    else ...[
+                      Text(
+                        state is TabataTimerPaused ? 'PAUSED' : state.currentState,
+                        style: const TextStyle(
+                            fontSize: 60,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${state.duration}',
+                        style: const TextStyle(
+                            fontSize: 150,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                     
                     const Spacer(),
                     

@@ -105,14 +105,22 @@ class CircuitTimerView extends StatelessWidget {
                     style: const TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    state is CircuitTimerPaused ? 'PAUSED' : state.currentState,
-                    style: const TextStyle(fontSize: 50, color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '${state.duration}',
-                    style: const TextStyle(fontSize: 120, color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
+                  if (state is CircuitTimerComplete)
+                    const Text(
+                      'Workout\nComplete!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 60, color: Colors.white, fontWeight: FontWeight.bold),
+                    )
+                  else ...[
+                    Text(
+                      state is CircuitTimerPaused ? 'PAUSED' : state.currentState,
+                      style: const TextStyle(fontSize: 50, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${state.duration}',
+                      style: const TextStyle(fontSize: 120, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                   
                   const Spacer(),
                   
