@@ -170,18 +170,17 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 60, 
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: GestureDetector(
-            onTap: _launchUrl,
-            child: Image.asset(
-              'assets/images/21boom.png',
-              height: 24,
-              fit: BoxFit.contain,
-              alignment: Alignment.centerLeft,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: _launchUrl,
+              child: Image.asset(
+                'assets/images/21boom.png',
+                height: 28,
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
+          ],
         ),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
@@ -212,20 +211,17 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
       ),
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return Column(
-            children: [
-              Expanded(
-                flex: orientation == Orientation.portrait ? 2 : 3,
-                child: Padding(
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: GridView.count(
                     crossAxisCount: orientation == Orientation.portrait ? 2 : 4,
                     crossAxisSpacing: 12.0,
                     mainAxisSpacing: 12.0,
                     shrinkWrap: true,
-                    physics: orientation == Orientation.portrait 
-                        ? const NeverScrollableScrollPhysics() 
-                        : const ScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       WorkoutCard(
                         title: 'TABATA',
@@ -282,33 +278,30 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 100,
-                  child: WorkoutCard(
-                    title: 'GENERAL TIMER',
-                    subtitle: 'Simple Countdown',
-                    icon: Icons.hourglass_empty,
-                    glowColor: Colors.purple.shade400,
-                    isHorizontal: true,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const GeneralTimerSetupScreen()),
-                      );
-                    },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 100,
+                    child: WorkoutCard(
+                      title: 'GENERAL TIMER',
+                      subtitle: 'Simple Countdown',
+                      icon: Icons.hourglass_empty,
+                      glowColor: Colors.purple.shade400,
+                      isHorizontal: true,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const GeneralTimerSetupScreen()),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: orientation == Orientation.portrait ? 1 : 2,
-                child: Center(
+                Center(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+                    padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
                     child: SizedBox(
                       width: orientation == Orientation.portrait 
                           ? MediaQuery.of(context).size.width * 0.7 
@@ -347,8 +340,8 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }
       ),
