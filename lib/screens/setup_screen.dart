@@ -170,12 +170,16 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
-          onTap: _launchUrl,
-          child: Image.asset(
-            'assets/images/21boom.png',
-            height: 30, // Scale down to match icon sizes
-            fit: BoxFit.contain,
+        leadingWidth: 100, // Give enough space for the logo
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: GestureDetector(
+            onTap: _launchUrl,
+            child: Image.asset(
+              'assets/images/21boom.png',
+              height: 30, // Match icon sizes
+              fit: BoxFit.contain,
+            ),
           ),
         ),
         backgroundColor: const Color(0xFF40324B),
