@@ -90,8 +90,8 @@ class AmrapTimerView extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      '${state.duration}',
-                      style: const TextStyle(fontSize: 120, color: Colors.white, fontWeight: FontWeight.bold),
+                      _formatTime(state.duration),
+                      style: const TextStyle(fontSize: 100, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ] else if (state is TimerRunComplete)
                     const Text(

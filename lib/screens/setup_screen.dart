@@ -172,7 +172,11 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
       appBar: AppBar(
         title: GestureDetector(
           onTap: _launchUrl,
-          child: const Text('21BOOM', style: TextStyle(fontWeight: FontWeight.bold))
+          child: Image.asset(
+            'assets/images/thankyou.png',
+            height: 30, // Scale down to match icon sizes
+            fit: BoxFit.contain,
+          ),
         ),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
