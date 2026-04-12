@@ -170,14 +170,14 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 120, // Increased width for the logo
+        leadingWidth: 60, 
         leading: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
+          padding: const EdgeInsets.only(left: 8.0),
           child: GestureDetector(
             onTap: _launchUrl,
             child: Image.asset(
               'assets/images/21boom.png',
-              height: 24, // Standard AppBar icon size is roughly 24
+              height: 24,
               fit: BoxFit.contain,
               alignment: Alignment.centerLeft,
             ),

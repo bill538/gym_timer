@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>clover-user-assets</BucketName><RequestId>HG7ZZ7YP9S23C6DG</RequestId><HostId>WMiiVq5oulQIHvsnXpwHws1X1fKgv5G5be+YZoWDTKO7JTfTzXJc2gqWcz1zLQyhIkfSFBprg64=</HostId></Error>
