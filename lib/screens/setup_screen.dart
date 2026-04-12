@@ -173,7 +173,7 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
         title: GestureDetector(
           onTap: _launchUrl,
           child: Image.asset(
-            'assets/images/thankyou.png',
+            'assets/images/21boom.png',
             height: 30, // Scale down to match icon sizes
             fit: BoxFit.contain,
           ),
