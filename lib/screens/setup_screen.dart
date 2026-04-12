@@ -177,8 +177,7 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
-                'assets/images/21boom.png',
-                height: 28,
+                'assets/images/header_logo.png',
                 fit: BoxFit.contain,
               ),
               const SizedBox(width: 8),
