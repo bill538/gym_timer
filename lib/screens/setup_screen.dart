@@ -170,17 +170,28 @@ class _SetupScreenState extends State<SetupScreen> with WidgetsBindingObserver, 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            GestureDetector(
-              onTap: _launchUrl,
-              child: Image.asset(
+        title: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _launchUrl,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
                 'assets/images/21boom.png',
                 height: 28,
                 fit: BoxFit.contain,
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              const Text(
+                '21BOOM',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
+          ),
         ),
         backgroundColor: const Color(0xFF40324B),
         elevation: 0,
