@@ -166,6 +166,7 @@ class CastService {
     required int totalRounds,
     required String backgroundColor,
     String? sound,
+    String? workoutType,
   }) async {
     isWorkoutActive = true;
     await _sendMessage({
@@ -176,6 +177,7 @@ class CastService {
       'totalRounds': totalRounds,
       'backgroundColor': backgroundColor,
       if (sound != null) 'sound': sound,
+      if (workoutType != null) 'workoutType': workoutType,
     });
   }
 

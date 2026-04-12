@@ -99,9 +99,16 @@
                 
                 // DISPLAY ONLY THE WORKOUT TIMER (mm:ss or seconds as passed)
                 clockElement.innerText = data.time;
-                detailsElement.innerText = data.state;
+                
+                // Show Timer Type and State
+                let detailsText = data.state;
+                if (data.workoutType) {
+                    detailsText = `${data.workoutType} - ${data.state}`;
+                }
+                detailsElement.innerText = detailsText;
 
-                if (data.totalRounds > 1) {
+                // EMOM and AMRAP often use totalRounds for minutes/sets
+                if (data.totalRounds > 1 || (data.workoutType === 'EMOM')) {
                     roundsElement.innerText = `Round ${data.round} / ${data.totalRounds}`;
                 } else {
                     roundsElement.innerText = '';

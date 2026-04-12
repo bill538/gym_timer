@@ -169,6 +169,7 @@ class CircuitTimerBloc extends Bloc<CircuitTimerEvent, CircuitTimerState> {
       totalRounds: rounds,
       backgroundColor: color,
       sound: sound,
+      workoutType: "Circuit",
     );
   }
 

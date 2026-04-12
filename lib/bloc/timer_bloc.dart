@@ -138,6 +138,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       totalRounds: total,
       backgroundColor: color,
       sound: sound,
+      workoutType: workoutType,
     );
   }
 
