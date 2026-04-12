@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Gym Timer Receiver</title>
+    <title>21BOOM - Gym Timer Receiver</title>
     <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
     <style>
         body {
@@ -103,12 +103,12 @@
                 // Show Timer Type and State
                 let detailsText = data.state;
                 if (data.state === 'Finished') {
-                    detailsText = 'Workout\nComplete!';
+                    detailsText = 'Workout Complete!';
                 } else if (data.workoutType) {
                     detailsText = `${data.workoutType} - ${data.state}`;
                 }
                 detailsElement.innerText = detailsText;
-                detailsElement.style.whiteSpace = 'pre-line';
+                detailsElement.style.whiteSpace = 'normal'; // Revert to normal for single line
 
                 // EMOM and AMRAP often use totalRounds for minutes/sets
                 if (data.totalRounds > 1 || (data.workoutType === 'EMOM')) {
