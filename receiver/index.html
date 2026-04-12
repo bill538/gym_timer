@@ -102,10 +102,13 @@
                 
                 // Show Timer Type and State
                 let detailsText = data.state;
-                if (data.workoutType) {
+                if (data.state === 'Finished') {
+                    detailsText = 'Workout\nComplete!';
+                } else if (data.workoutType) {
                     detailsText = `${data.workoutType} - ${data.state}`;
                 }
                 detailsElement.innerText = detailsText;
+                detailsElement.style.whiteSpace = 'pre-line';
 
                 // EMOM and AMRAP often use totalRounds for minutes/sets
                 if (data.totalRounds > 1 || (data.workoutType === 'EMOM')) {
