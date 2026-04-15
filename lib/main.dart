@@ -9,9 +9,15 @@ import 'package:gym_timer/settings.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load settings on app startup
   final prefs = await SharedPreferences.getInstance();
+  
+  // Load All Settings
   AppSettings.getReadyDuration = prefs.getInt('getReadyDuration') ?? AppSettings.getReadyDuration;
+  
+  int? beepStart = prefs.getInt('getReadyBeepStart');
+  if (beepStart == -1) beepStart = null;
+  AppSettings.getReadyBeepStart = beepStart;
+
   AppSettings.lastCastDeviceName = prefs.getString('lastCastDeviceName') ?? AppSettings.lastCastDeviceName;
   AppSettings.lastCastDeviceId = prefs.getString('lastCastDeviceId') ?? AppSettings.lastCastDeviceId;
   AppSettings.autoConnectChromecast = prefs.getBool('autoConnectChromecast') ?? AppSettings.autoConnectChromecast;
@@ -28,7 +34,7 @@ class GymTimerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Project Gym Timer',
+      title: '21BOOM Timer',
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF40324B),
