@@ -85,8 +85,8 @@ class AmrapTimerView extends StatelessWidget {
                     )
                   else if (state is TimerRunInProgress || state is TimerRunPause) ...[
                     Text(
-                      state is TimerRunPause ? 'PAUSED' : 'Time Remaining',
-                      style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+                      state is TimerRunPause ? 'PAUSED' : 'WORK',
+                      style: const TextStyle(fontSize: 60, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
                     Text(

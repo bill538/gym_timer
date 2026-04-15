@@ -85,10 +85,14 @@ class EmomTimerView extends StatelessWidget {
                     )
                   else if (state is TimerRunInProgress || state is TimerRunPause) ...[
                     Text(
-                      state is TimerRunPause ? 'PAUSED' : 'Minute ${((minutes * 60 - state.duration) ~/ 60) + 1} / $minutes',
+                      'Minute ${((minutes * 60 - state.duration) ~/ 60) + 1} / $minutes',
                       style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
+                    Text(
+                      state is TimerRunPause ? 'PAUSED' : 'WORK',
+                      style: const TextStyle(fontSize: 60, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                     Text(
                       '${state.duration % 60}',
                       style: const TextStyle(fontSize: 150, color: Colors.white, fontWeight: FontWeight.bold),

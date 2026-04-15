@@ -42,23 +42,31 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   void _onStarted(TimerStarted event, Emitter<TimerState> emit) async {
     // Sync setup clock to Chromecast immediately on start to transition
-    _updateCast(0, "Get Ready", sound: 'beep.mp3');
+    _updateCast(AppSettings.getReadyDuration, "Get Ready");
     
     // Get Ready countdown
     for (int i = AppSettings.getReadyDuration; i > 0; i--) {
       emit(TimerCountdown(i));
-      if (i < AppSettings.getReadyDuration) {
-        _updateCast(i, "Get Ready", sound: (i <= 3) ? 'beep.mp3' : null);
+      
+      // Determine if we should play a beep based on settings
+      bool shouldBeep = false;
+      if (AppSettings.getReadyBeepStart == null) {
+        shouldBeep = true; // Blank setting: beep full duration
+      } else if (i <= AppSettings.getReadyBeepStart!) {
+        shouldBeep = true; // Number setting: beep from that number down
+      }
+
+      if (shouldBeep) {
+        _playSound('beep.mp3');
+        _updateCast(i, "Get Ready", sound: 'beep.mp3');
       } else {
         _updateCast(i, "Get Ready");
       }
-      if (i <= 3) {
-        await _playSound('beep.mp3');
-      }
+      
       await Future.delayed(const Duration(seconds: 1));
     }
     
-    _playSound('start.mp3'); // Wait for start sound to finish
+    _playSound('start.mp3');
     emit(TimerRunInProgress(event.duration));
     _updateCast(event.duration, "Go!", sound: 'start.mp3');
     _tickerSubscription?.cancel();
