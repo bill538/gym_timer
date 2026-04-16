@@ -32,22 +32,22 @@ flowchart TB
     User((User)):::user
 
     subgraph Flutter App [Flutter Cross-Platform Layer]
-        UI[Flutter UI Widgets\nScreens: AMRAP, EMOM, etc.]:::flutter
-        BLoC[TimerBloc\nState Management]:::flutter
-        Audio[AudioService\nFresh AudioPlayer per sound]:::flutter
-        CastService[CastService\nflutter_chrome_cast]:::flutter
+        UI[Flutter UI Widgets <br> Screens: AMRAP, EMOM, etc.]:::flutter
+        BLoC[TimerBloc <br> State Management]:::flutter
+        Audio[AudioService <br> Fresh AudioPlayer per sound]:::flutter
+        CastService[CastService <br> flutter_chrome_cast]:::flutter
     end
 
     subgraph Android Native [Android Native Layer]
         KotlinPlugin[Flutter Plugin Bridge]:::native
-        CastOptions[CastOptionsProvider\nInjects Custom App ID]:::native
+        CastOptions[CastOptionsProvider <br> Injects Custom App ID]:::native
         AndroidCastSDK[Google Cast SDK]:::native
     end
 
     subgraph TV/Display [Chromecast Receiver]
         WebReceiver[Custom Web Receiver Application]:::cast
-        TV_UI[TV Display UI\nTimer, Type, Round]:::cast
-        TV_Audio[Native TV Audio\nZero-latency Beeps]:::cast
+        TV_UI[TV Display UI <br> Timer, Type, Round]:::cast
+        TV_Audio[Native TV Audio <br> Zero-latency Beeps]:::cast
     end
 
     %% Flow of Data and Interactions
@@ -56,7 +56,7 @@ flowchart TB
     BLoC -->|Yields UI States| UI
     
     BLoC -->|Triggers Local Sounds| Audio
-    BLoC -->|Sends Timer Payload\n(Time, State, Type)| CastService
+    BLoC -->|Sends Timer Payload <br> (Time, State, Type)| CastService
     
     CastService -->|Method Channel| KotlinPlugin
     KotlinPlugin --> AndroidCastSDK
