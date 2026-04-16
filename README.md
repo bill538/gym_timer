@@ -56,7 +56,7 @@ flowchart TB
     BLoC -->|Yields UI States| UI
     
     BLoC -->|Triggers Local Sounds| Audio
-    BLoC -->|Sends Timer Payload <br> (Time, State, Type)| CastService
+    BLoC -->|Sends Timer Payload <br> Time, State, Type| CastService
     
     CastService -->|Method Channel| KotlinPlugin
     KotlinPlugin --> AndroidCastSDK
